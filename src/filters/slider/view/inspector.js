@@ -1,0 +1,448 @@
+/**
+ * Slider Carousel Filter
+ *
+ * @package TheWebSolver\Core\Blocks_Filter\Slider_Carousel
+ *
+ * -----------------------------------
+ * DEVELOPED-MAINTAINED-SUPPPORTED BY
+ * -----------------------------------
+ * ███║     ███╗   ████████████████
+ * ███║     ███║   ═════════██████╗
+ * ███║     ███║        ╔══█████═╝
+ *  ████████████║      ╚═█████
+ * ███║═════███║      █████╗
+ * ███║     ███║    █████═╝
+ * ███║     ███║   ████████████████╗
+ * ╚═╝      ╚═╝    ═══════════════╝
+ */
+
+import { eligibleBlocks } from "../controller/props";
+import { __experimentalNumberControl as NumberControl } from '@wordpress/components';
+
+const { createHigherOrderComponent } = wp.compose;
+const { Fragment } = wp.element;
+const { InspectorControls } = wp.blockEditor;
+const {
+	PanelBody,
+	Panel,
+	TabPanel,
+	ToggleControl,
+	TextControl,
+} = wp.components;
+const { __ } = wp.i18n;
+
+/**
+ * Create HOC to add custom attributes to the slider carousel.
+ */
+export default createHigherOrderComponent(BlockEdit => {
+	return props => {
+		// Bail early if not slider Carousel container.
+		if (!eligibleBlocks.includes(props.name)) {
+			return <BlockEdit {...props} />;
+		}
+
+		const {
+			sliderEnabled,
+			defaultEnabled,
+			defaultSlideNumber,
+			defaultSpace,
+			wrapperElement,
+			slideElement,
+			removeWrapperClass,
+			removeSlideClass,
+			wrapperClassNameToRemove,
+			slideClassNameToRemove,
+			enableInteraction,
+			enableBullets,
+			bulletClickable,
+			bulletDynamic,
+			bulletRender,
+			enableArrows,
+			enableBreakpoints,
+			enableOneBreakpoint,
+			breakOnePixels,
+			breakOneSlides,
+			breakOneSpace,
+			breakOneEnabled,
+			enableTwoBreakpoint,
+			breakTwoPixels,
+			breakTwoSlides,
+			breakTwoSpace,
+			breakTwoEnabled,
+			enableThreeBreakpoint,
+			breakThreePixels,
+			breakThreeSlides,
+			breakThreeSpace,
+			breakThreeEnabled,
+			enableFourBreakpoint,
+			breakFourPixels,
+			breakFourSlides,
+			breakFourSpace,
+			breakFourEnabled,
+		} = props.attributes;
+
+		props.attributes.className = sliderEnabled ? 'tws-block__sliderCarousel' : '';
+
+		return (
+			<Fragment>
+				<BlockEdit {...props} />
+				<InspectorControls>
+					<ToggleControl
+						className="tws-slider-carousel__enable tws-blockfilter__toggle"
+						label={__('Enable Slider Carousel', 'tws-blockfilter')}
+						help={sliderEnabled ? __('This group will be converted to a slider', 'tws-blockfilter') : __('This group is not a slider', 'tws-blockfilter')}
+						checked={sliderEnabled}
+						onChange={() => props.setAttributes({ sliderEnabled: !sliderEnabled })}
+					/>
+					{sliderEnabled && (
+						// Main toggle controls.
+						<>
+							<ToggleControl
+								className="tws-slider-carousel__enable-breakpoint tws-blockfilter__toggle"
+								label={__('Make slider responsive', 'tws-blockfilter')}
+								help={enableBreakpoints ? __('Enables slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter') : __('Disables slider breakpoint', 'tws-blockfilter')}
+								checked={enableBreakpoints}
+								onChange={() => props.setAttributes({ enableBreakpoints: !enableBreakpoints })}
+							/>
+							<PanelBody
+								title={__("Default Options", 'tws-blockfilter')}
+								initialOpen={false}
+								className='tws-slider-carousel__panelBody'
+							>
+								<ToggleControl
+									className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner"
+									label={__('Enable interactions', 'tws-blockfilter')}
+									help={defaultEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", "tws-blockfilter")}
+									checked={defaultEnabled}
+									onChange={() => props.setAttributes({ defaultEnabled: !defaultEnabled })}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__enable-interaction tws-blockfilter__toggle-inner"
+									label={__('Allow Touch Move', 'tws-blockfilter')}
+									help={enableInteraction ? __('Enables slider interact with touch, drag, etc.', 'tws-blockfilter') : __('Disables slider touch interaction. Useful in case where only bullet/arrow navigation is preferred.', 'tws-blockfilter')}
+									checked={enableInteraction}
+									onChange={() => props.setAttributes({ enableInteraction: !enableInteraction })}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__enable-bullets tws-blockfilter__toggle-inner"
+									label={__('Show bullet pagination', 'tws-blockfilter')}
+									help={enableBullets ? __('Enables slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter') : __('Disables bullet navigation controls', 'tws-blockfilter')}
+									checked={enableBullets}
+									onChange={() => props.setAttributes({ enableBullets: !enableBullets })}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__enable-arrows tws-blockfilter__toggle-inner"
+									label={__('Show arrow navigation', 'tws-blockfilter')}
+									help={enableArrows ? __('Enables slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter') : __('Disables arrow navigation controls', 'tws-blockfilter')}
+									checked={enableArrows}
+									onChange={() => props.setAttributes({ enableArrows: !enableArrows })}
+								/>
+								<NumberControl
+									label={__('Number of slides to show', 'tws-blockfilter')}
+									dragDirection='e'
+									dragThreshold={1}
+									labelPosition='top'
+									step={1}
+									value={defaultSlideNumber}
+									onChange={value => props.setAttributes({ defaultSlideNumber: value })}
+								/>
+								<NumberControl
+									label={__('Gap (margins) between slides', 'tws-blockfilter')}
+									dragDirection='e'
+									dragThreshold={1}
+									labelPosition='top'
+									step={1}
+									value={defaultSpace}
+									onChange={value => props.setAttributes({ defaultSpace: value })}
+								/>
+								<TextControl
+									label="Wrapper Element"
+									value={wrapperElement || ''}
+									onChange={value => props.setAttributes({ wrapperElement: value })}
+									help={__('The wrapper element is an element that contains one or more slides. Best used with WordPress Columns Block.', 'tws-blockfilter')}
+								/>
+								<TextControl
+									label="Slide Element"
+									value={slideElement || ''}
+									onChange={value => props.setAttributes({ slideElement: value })}
+									help={__("The slide element is an element that will be a single slide container. Best used with WordPress Columns' column Block.", "tws-blockfilter")}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__remove-wrapper-class tws-blockfilter__toggle-inner"
+									label={__('Remove default wrapper class', 'tws-blockfilter')}
+									help={removeWrapperClass ? __('Removes given classes from the slider wrapper element in PanelBody "Remove Wrapper Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter')}
+									checked={removeWrapperClass}
+									onChange={() => props.setAttributes({ removeWrapperClass: !removeWrapperClass })}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__remove-slide-class tws-blockfilter__toggle-inner"
+									label={__('Remove default slide class', 'tws-blockfilter')}
+									help={removeSlideClass ? __('Removes given classes from the slider each slide element in PanelBody "Remove Slides Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter')}
+									checked={removeSlideClass}
+									onChange={() => props.setAttributes({ removeSlideClass: !removeSlideClass })}
+								/>
+							</PanelBody>
+						</>
+					)}
+					{sliderEnabled && removeWrapperClass && (
+						<PanelBody
+							title={__('Remove Wrapper Class', 'tws-blockfilter')}
+							initialOpen={false}
+							className='tws-slider-carousel__panelBody'
+						>
+							<TextControl
+								value={wrapperClassNameToRemove || ''}
+								onChange={value => props.setAttributes({ wrapperClassNameToRemove: value })}
+								help={__('Enter default classnames applied to slides wrapper element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')}
+							/>
+						</PanelBody>
+					)}
+					{sliderEnabled && removeSlideClass && (
+						<PanelBody
+							title={__('Remove Slide Class', 'tws-blockfilter')}
+							initialOpen={false}
+							className='tws-slider-carousel__panelBody'
+						>
+							<TextControl
+								value={slideClassNameToRemove || ''}
+								onChange={value => props.setAttributes({ slideClassNameToRemove: value })}
+								help={__('Enter default classnames applied to each slide element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')}
+							/>
+						</PanelBody>
+					)}
+					{sliderEnabled && enableBullets && (
+						<PanelBody
+							title={__('Bullet Options', 'tws-blockfilter')}
+							initialOpen={false}
+							className='tws-slider-carousel__panelBody'
+						>
+							<ToggleControl
+								className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
+								label={__('Make Bullet Clickable', 'tws-blockfilter')}
+								help={bulletClickable ? __('Clicking bullet will change slide', 'tws-blockfilter') : __("Clicking bullet won't change slide", "tws-blockfilter")}
+								checked={bulletClickable}
+								onChange={() => props.setAttributes({ bulletClickable: !bulletClickable })}
+							/>
+							<ToggleControl
+								className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
+								label={__('Make Bullets Dynamic', 'tws-blockfilter')}
+								help={bulletDynamic ? __('Keep only few bullets visible', 'tws-blockfilter') : __("Keep all bullets visible", "tws-blockfilter")}
+								checked={bulletDynamic}
+								onChange={() => props.setAttributes({ bulletDynamic: !bulletDynamic })}
+							/>
+							{!bulletDynamic && (
+								<TextControl
+									label={__('Enter render callback for bullets separated by comma. The number of values enter here must match the total number of slides.', 'tws-blockfilter')}
+									value={bulletRender || ''}
+									onChange={value => props.setAttributes({ bulletRender: value })}
+								/>
+							)}
+						</PanelBody>
+					)}
+					{sliderEnabled && enableBreakpoints && (
+						<PanelBody
+							title={__('Slider Breakpoints', 'tws-blockfilter')}
+							initialOpen={false}
+							className='tws-slider-carousel__panelBody'
+						>
+							{/* First breakpoint options */}
+							<ToggleControl
+								className="tws-slider-carousel__enable-first-breakpoint tws-blockfilter__toggle-inner"
+								label={__('Enable first breakpoint', 'tws-blockfilter')}
+								help={__('(mobile device portrait)', 'tws-blockfilter')}
+								checked={enableOneBreakpoint}
+								onChange={() => props.setAttributes({ enableOneBreakpoint: !enableOneBreakpoint })}
+							/>
+							{enableOneBreakpoint && (
+								<Panel className="tws-slider-carousel__panel">
+									<NumberControl
+										label={__('Enter window width (in px)', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={10}
+										labelPosition='top'
+										isShiftStepEnabled={true}
+										step={5}
+										shiftStep={50}
+										value={breakOnePixels}
+										onChange={value => props.setAttributes({ breakOnePixels: value })}
+									/>
+									<NumberControl
+										label={__('Number of slides to show', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={1}
+										labelPosition='top'
+										step={1}
+										value={breakOneSlides}
+										onChange={value => props.setAttributes({ breakOneSlides: value })}
+									/>
+									<NumberControl
+										label={__('Gap (margins) between slides', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={1}
+										labelPosition='top'
+										step={1}
+										value={breakOneSpace}
+										onChange={value => props.setAttributes({ breakOneSpace: value })}
+									/>
+									<ToggleControl
+										className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
+										label={__('Enable interactions', 'tws-blockfilter')}
+										help={breakOneEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", "tws-blockfilter")}
+										checked={breakOneEnabled}
+										onChange={() => props.setAttributes({ breakOneEnabled: !breakOneEnabled })}
+									/>
+								</Panel>
+							)}
+
+							{/* Second breakpoint options */}
+							<ToggleControl
+								className="tws-slider-carousel__enable-second-breakpoint tws-blockfilter__toggle-inner"
+								label={__('Enable second breakpoint', 'tws-blockfilter')}
+								help={__('(Mobile device ladscape/phablet)', 'tws-blockfilter')}
+								checked={enableTwoBreakpoint}
+								onChange={() => props.setAttributes({ enableTwoBreakpoint: !enableTwoBreakpoint })}
+							/>
+							{enableTwoBreakpoint && (
+								<Panel className="tws-slider-carousel__panel">
+									<NumberControl
+										label={__('Enter window width (in px)', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={10}
+										labelPosition='top'
+										isShiftStepEnabled={true}
+										step={5}
+										shiftStep={50}
+										value={breakTwoPixels}
+										onChange={value => props.setAttributes({ breakTwoPixels: value })}
+									/>
+									<NumberControl
+										label={__('Number of slides to show', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={1}
+										labelPosition='top'
+										step={1}
+										value={breakTwoSlides}
+										onChange={value => props.setAttributes({ breakTwoSlides: value })}
+									/>
+									<NumberControl
+										label={__('Gap (margins) between slides', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={8}
+										labelPosition='top'
+										step={2}
+										value={breakTwoSpace}
+										onChange={value => props.setAttributes({ breakTwoSpace: value })}
+									/>
+									<ToggleControl
+										className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
+										label={__('Enable interactions', 'tws-blockfilter')}
+										help={breakTwoEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", "tws-blockfilter")}
+										checked={breakTwoEnabled}
+										onChange={() => props.setAttributes({ breakTwoEnabled: !breakTwoEnabled })}
+									/>
+								</Panel>
+							)}
+							{/* Third breakpoint options */}
+							<ToggleControl
+								className="tws-slider-carousel__enable-third-breakpoint tws-blockfilter__toggle-inner"
+								label={__('Enable third breakpoint', 'tws-blockfilter')}
+								help={__('(tablet portrait)', 'tws-blockfilter')}
+								checked={enableThreeBreakpoint}
+								onChange={() => props.setAttributes({ enableThreeBreakpoint: !enableThreeBreakpoint })}
+							/>
+							{enableThreeBreakpoint && (
+								<Panel className="tws-slider-carousel__panel">
+									<NumberControl
+										label={__('Enter window width (in px)', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={10}
+										labelPosition='top'
+										isShiftStepEnabled={true}
+										step={5}
+										shiftStep={50}
+										value={breakThreePixels}
+										onChange={value => props.setAttributes({ breakThreePixels: value })}
+									/>
+									<NumberControl
+										label={__('Number of slides to show', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={1}
+										labelPosition='top'
+										step={1}
+										value={breakThreeSlides}
+										onChange={value => props.setAttributes({ breakThreeSlides: value })}
+									/>
+									<NumberControl
+										label={__('Gap (margins) between slides', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={3}
+										labelPosition='top'
+										step={1}
+										value={breakThreeSpace}
+										onChange={value => props.setAttributes({ breakThreeSpace: value })}
+									/>
+									<ToggleControl
+										className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
+										label={__('Enable interactions', 'tws-blockfilter')}
+										help={breakThreeEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", "tws-blockfilter")}
+										checked={breakThreeEnabled}
+										onChange={() => props.setAttributes({ breakThreeEnabled: !breakThreeEnabled })}
+									/>
+								</Panel>
+							)}
+
+							{/* Second breakpoint options */}
+							<ToggleControl
+								className="tws-slider-carousel__enable-four-breakpoint tws-blockfilter__toggle-inner"
+								label={__('Enable forth breakpoint', 'tws-blockfilter')}
+								help={__('(Tablet landspace/laptop)', 'tws-blockfilter')}
+								checked={enableFourBreakpoint}
+								onChange={() => props.setAttributes({ enableFourBreakpoint: !enableFourBreakpoint })}
+							/>
+							{enableFourBreakpoint && (
+								<Panel className="tws-slider-carousel__panel">
+									<NumberControl
+										label={__('Enter window width (in px)', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={10}
+										labelPosition='top'
+										isShiftStepEnabled={true}
+										step={5}
+										shiftStep={50}
+										value={breakFourPixels}
+										onChange={value => props.setAttributes({ breakFourPixels: value })}
+									/>
+									<NumberControl
+										label={__('Number of slides to show', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={1}
+										labelPosition='top'
+										step={1}
+										value={breakFourSlides}
+										onChange={value => props.setAttributes({ breakFourSlides: value })}
+									/>
+									<NumberControl
+										label={__('Gap (margins) between slides', 'tws-blockfilter')}
+										dragDirection='e'
+										dragThreshold={8}
+										labelPosition='top'
+										step={2}
+										value={breakFourSpace}
+										onChange={value => props.setAttributes({ breakFourSpace: value })}
+									/>
+									<ToggleControl
+										className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
+										label={__('Enable interactions', 'tws-blockfilter')}
+										help={breakFourEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", "tws-blockfilter")}
+										checked={breakFourEnabled}
+										onChange={() => props.setAttributes({ breakFourEnabled: !breakFourEnabled })}
+									/>
+								</Panel>
+							)}
+						</PanelBody>
+					)}
+				</InspectorControls>
+			</Fragment>
+		);
+	};
+}, "withSliderCarouselControls");

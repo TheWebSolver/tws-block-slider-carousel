@@ -1,0 +1,32 @@
+:root {
+  --light: #f4f4f4;
+  --shadow: rgba(0, 0, 0, 0.15);
+  --gutter: 8px;
+	--gutter-2x: 16px;
+	--gutter-n: -8px;
+}
+
+/* Block filter controls. */
+.block-editor-panel-color-gradient-settings,
+.tws-blockfilter__toggle,
+.tws-slider-carousel__panelBody {
+  margin-bottom: var(--gutter) !important;
+  box-shadow: 0 2px 3px var(--shadow);
+}
+.tws-blockfilter__toggle,
+.tws-slider-carousel__panelBody.is-opened {
+  padding: var(--gutter) 20px var(--gutter) var(--gutter);
+}
+.tws-blockfilter__toggle-inner {
+	padding: var(--gutter-2x) var(--gutter) var(--gutter);
+	margin: var(--gutter) var(--gutter-n) 0 !important;
+	background-color: var(--light);
+}
+.tws-slider-carousel__panel {
+	background-color: var(--light);
+	margin: 0 var(--gutter-n) var(--gutter);
+	padding: var(--gutter);
+}
+.tws-blockfilter__toggle-inner-2 {
+	margin-top: var(--gutter-2x);
+}
