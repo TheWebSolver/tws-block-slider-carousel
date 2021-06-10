@@ -44,7 +44,7 @@ function tws_bfsc_eligible_blocks() {
 	 */
 	$eligible_blocks = apply_filters(
 		'hzfex_eligible_slider_carousel_blocks',
-		array( 'core/group', 'core/columns' )
+		array( 'core/group' )
 	);
 
 	return $eligible_blocks;
@@ -159,32 +159,25 @@ function tws_bfsc_enqueue_block_assets() {
 }
 add_action( 'enqueue_block_editor_assets', 'tws_bfsc_enqueue_block_assets' );
 
-// phpcs:disable
+/**
+ * Enqueues slider carousel styles and scripts.
+ */
 function tws_enqueue_slider_scripts() {
 	global $post;
 
-	$post_blocks     = parse_blocks( $post->post_content );
-	$block_names     = wp_list_pluck( $post_blocks, 'blockName' );
-	$eligible_blocks = array_intersect( $block_names, tws_bfsc_eligible_blocks() );
-
-	if ( empty( $eligible_blocks ) ) {
-		return;
-	}
-
-	foreach ( $post_blocks as $block ) {
-		// Ignore all blocks that doesn't have slider carousel enabled.
+	foreach ( parse_blocks( $post->post_content ) as $block ) {
+		// Verify that at least one block has slider enabled.
 		if (
-			! in_array( $block['blockName'], tws_bfsc_eligible_blocks(), true )
-			|| empty( $block['attrs'] )
-			|| ! isset( $block['attrs']['className'] )
+			in_array( $block['blockName'], tws_bfsc_eligible_blocks(), true )
+			&& isset( $block['attrs']['sliderEnabled'] )
+			&& $block['attrs']['sliderEnabled']
 		) {
-			continue;
-		}
-
-		// Enqueue slider style and script files if block.
-		if ( false !== strpos( $block['attrs']['className'], 'tws-block__sliderCarousel' ) ) {
+			// Block is a slider. Enqueue styles and sripts.
 			wp_enqueue_script( 'tws-slider-carousel-script' );
 			wp_enqueue_style( 'tws-slick-style' );
+
+			// One check is enough, exit the loop.
+			break;
 		}
 	}
 }
