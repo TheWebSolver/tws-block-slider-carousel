@@ -42,6 +42,7 @@ export default (props, blockType, attributes) => {
 		defaultSpace,
 		wrapperElement,
 		slideElement,
+		slideEffect,
 		removeWrapperClass,
 		removeSlideClass,
 		wrapperClassNameToRemove,
@@ -80,6 +81,7 @@ export default (props, blockType, attributes) => {
 		slidesPerView: defaultSlideNumber,
 		spaceBetween: defaultSpace,
 		allowTouchMove: enableInteraction,
+		effect: slideEffect,
 	},
 		$removeWrapper = removeWrapperClass ? wrapperClassNameToRemove : '',
 		$removeSlide = removeSlideClass ? slideClassNameToRemove : '',
@@ -132,6 +134,7 @@ export default (props, blockType, attributes) => {
 		props,
 		{
 			...(sliderEnabled && {
+				'className': `${props.className} tws-block__sliderCarousel`,
 				'data-sliderdefault': JSON.stringify($defaults),
 				'data-wrapper': wrapperElement,
 				'data-slide': slideElement,
@@ -143,6 +146,9 @@ export default (props, blockType, attributes) => {
 			})
 		}
 	);
+
+	// Get the above applied data in browser console.
+	// console.log(props);
 
 	return props;
 };

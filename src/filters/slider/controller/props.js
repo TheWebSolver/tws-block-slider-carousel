@@ -16,6 +16,8 @@
  * ╚═╝      ╚═╝    ═══════════════╝
  */
 
+ const { __ } = wp.i18n;
+
 /**
  * WordPress core blocks which can be used as slider carousel.
  *
@@ -25,6 +27,32 @@
  * @filesource tws-blocks-slider-carousel\tws-block-slider-carousel.php
  */
 export const eligibleBlocks = twsSliderCarousel.blocks;
+
+/**
+ * Various slider effects.
+ */
+export const sliderEffects = [
+	{
+		label: __('Slide', 'tws-blockfilter'),
+		value: 'slide',
+	},
+	{
+		label: __('Fade', 'tws-blockfilter'),
+		value: 'fade',
+	},
+	{
+		label: __('Cube', 'tws-blockfilter'),
+		value: 'cube',
+	},
+	{
+		label: __('Cover Flow', 'tws-blockfilter'),
+		value: 'coverflow',
+	},
+	{
+		label: __('Flip', 'tws-blockfilter'),
+		value: 'flip',
+	},
+];
 
 /**
  * New attributes to assign to containers defined in "eligibleBlocks".
@@ -45,6 +73,10 @@ export const sliderCarouselAttributes = {
 	defaultEnabled: {
 		type: 'boolean',
 		default: true,
+	},
+	slideEffect: {
+		type: 'string',
+		default: 'slide'
 	},
 	wrapperElement: {
 		type: 'string',
