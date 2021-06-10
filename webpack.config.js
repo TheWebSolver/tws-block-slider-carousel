@@ -16,10 +16,6 @@ module.exports = {
 		...defaultConfig.module,
 		rules: [
 			...defaultConfig.module.rules,
-			{
-				test: /\.svg$/,
-				use: ["@svgr/webpack", "url-loader"]
-			}
 		]
 	}
 };
