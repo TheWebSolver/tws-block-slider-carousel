@@ -46,6 +46,27 @@ const createBullets = (container, bulletId) => {
 }
 
 /**
+ * Creates navigation arrows for the slider.
+ *
+ * @param {Element} container The slider container element.
+ * @param {string} prev The button ID for previous slide.
+ * @param {string} next The button ID for next slide.
+ */
+const createArrows = (container, prev, next) => {
+	let $prevBtn = document.createElement('span'),
+		$nextBtn = document.createElement('span');
+
+	$prevBtn.setAttribute('id', prev);
+	$prevBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--prev swiper-navigation');
+	$nextBtn.setAttribute('id', next);
+	$nextBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--next swiper-navigation');
+
+	container.classList.add('tws-sliderCarousel__with-arrows');
+	container.append($prevBtn);
+	container.append($nextBtn);
+}
+
+/**
  * Checks if given array has non-empy value.
  *
  * @param {string[]} value The array to check if any value is empty.
@@ -76,25 +97,28 @@ const addBreakpointClasses = (container, breakpoints) => {
  * Prepare slider options from data attribute of the block.
  *
  * @param {Element} block      The block where slider is applied.
- * @param {string} container  The block inner container class which will
+ * @param {Element} container  The block inner container class which will
  *                            actually be the slider container.
  * @throws {Error}
  */
 const prepareData = (block, container, containerClass) => {
-	let $slideCount = container.children[0].children.length;
+	// Get slider wrapper.
+	let $wrapper = block.dataset.wrapper,
+		$wrapperEl = container.querySelector($wrapper),
+		$slideCount = $wrapperEl.children.length;
 
 	// Bail if slide count is less than two.
 	if ($slideCount < 2) {
 		throw new Error('There must be atleast 2 slide elements inside the wrapper element to initialize the slider.');
 	}
 
-	let $wrapper = block.dataset.wrapper,
-		$slide = block.dataset.slide,
+	// Get other slider data.
+	let $slide = block.dataset.slide,
 		$wrapperClass = block.dataset.wrapperclass,
 		$slideClass = block.dataset.slideclass,
 		$bullet = JSON.parse(block.dataset.bulletcontrol),
 		$bulletRender = [],
-		$arrow = block.dataset.arrowcontrol,
+		$arrow = JSON.parse(block.dataset.arrowcontrol),
 		$breakpoints = JSON.parse(block.dataset.breakpoints);
 
 	if (typeof $bullet.render === 'string') {
@@ -127,28 +151,74 @@ const prepareData = (block, container, containerClass) => {
 		}
 	}
 
+	if ($arrow.enabled) {
+		let $arrowIdNext = `${containerClass}--next`,
+			$arrowIdPrev = `${containerClass}--prev`;
+
+		createArrows(container, $arrowIdNext, $arrowIdPrev);
+
+		sliderOptions['navigation'] = {
+			nextEl: `#${$arrowIdNext}`,
+			prevEl: `#${$arrowIdPrev}`
+		}
+	}
+
 	addBreakpointClasses(container, $breakpoints);
 
 	// Remove default class (if given), add swiperjs classes to wrapper and slides.
-	let $wrapperEl = container.querySelector($wrapper),
-		$slideEl = $wrapperEl.querySelectorAll($slide),
+	let $wrapperChildNodes = $wrapperEl.childNodes,
 		$slideNumber = 0;
 
-	if (typeof $wrapperClass === 'string' && $wrapperEl.classList.contains($wrapperClass)) {
-		$wrapperEl.classList.remove($wrapperClass);
-	}
+	// Add the slider wrapper class.
 	$wrapperEl.classList.add('swiper-wrapper');
 
-	$slideEl.forEach((slide, index) => {
-		$slideNumber = index + 1;
-		if (slide.innerHTML === '') {
+	// Remove default applied class to slider wrapper, if given.
+	try {
+		if (typeof $wrapperClass === 'string' && $wrapperEl.classList.contains($wrapperClass)) {
+			$wrapperEl.classList.remove($wrapperClass);
+		}
+	} catch (error) {
+		// Not a big issue, just notify on console if something goes wrong.
+		console.error(error);
+	}
+
+	// Iterate over all child nodes of the slider wrapper to get the slides.
+	for (let slide = 0; slide < $wrapperChildNodes.length; slide++) {
+		$slideNumber = slide + 1;
+		let $sliderSlide = $wrapperChildNodes[slide],
+			$slideClasses = $sliderSlide.className;
+
+		// Ignore elements that has no classes applied.
+		if (typeof $slideClasses === 'undefined') {
+			continue;
+		}
+
+		let $slideTag = $sliderSlide.tagName.toLowerCase(),
+			$slideName = `${$slideTag}.${$slideClasses}`;
+
+		// Ignore elements that are not slides.
+		if (!$slideName.includes($slide)) {
+			continue;
+		}
+
+		// An info message if slide is empty.
+		if ($sliderSlide.innerHTML === '') {
 			console.info(`The container with classname "${containerClass}" has slide "${$slideNumber}" with no content. Is it on purpose?`);
 		}
-		if (typeof $slideClass === 'string' && slide.classList.contains($slideClass)) {
-			slide.classList.remove($slideClass);
+
+		// Add the slide class.
+		$sliderSlide.classList.add('swiper-slide');
+
+		// Remove default applied class to the slides, if given.
+		try {
+			if (typeof $slideClass === 'string' && $sliderSlide.className.includes($slideClass)) {
+				$sliderSlide.classList.remove($slideClass);
+			}
+		} catch (error) {
+			// Not a big issue, just notify on console if something goes wrong.
+			console.error(error);
 		}
-		slide.classList.add('swiper-slide');
-	});
+	}
 
 	createSlider(`.${containerClass}`, sliderOptions);
 }
@@ -158,43 +228,46 @@ const prepareData = (block, container, containerClass) => {
  * Iterate over slider carousel blocks and initialize slider creation.
  */
 if (Array.isArray(SliderElements)) {
+	let $blockIndex = 0, $innerIndex = 0;
 	// Iterate over all block elements to inject slider classes.
 	SliderElements.forEach((container, index) => {
+		$blockIndex = index + 1;
 		// Elements' classes passed from localized script.
-		let blockElement = document.getElementsByClassName(container.parent),
-			blockChildClass = container.child;
+		let $blockElement = document.getElementsByClassName(container.parent),
+			$blockChildClass = container.child;
 
-		for (let block = 0; block < blockElement.length; block++) {
+		for (let block = 0; block < $blockElement.length; block++) {
+			$innerIndex = block + 1;
 			// Verify that given block is enabled as a slider carousel.
-			if (blockElement[block].classList.contains('tws-block__sliderCarousel')) {
+			if ($blockElement[block].classList.contains('tws-block__sliderCarousel')) {
+				// Define new classes by the number of blocks enabled for slider carousel.
+				let $blockClass = `tws-sliderCarousel--container__${$blockIndex}--instance__${$innerIndex}`,
+					$innerClass = `tws-sliderCarousel__${$blockIndex}--instance__${$innerIndex}`;
+
 				// The block element must have only one inner element.
 				// This inner element will be the main container for slider carousel.
-				if (1 !== blockElement[block].children.length) {
-					console.error(`The block element with classname "${container.parent}" does not have any inner HTML element to instantiate the slider. Use block that creates an inner container like WordPress default "group" block.`);
+				if (1 !== $blockElement[block].children.length) {
+					console.error(`The block element with classname "${$blockClass}" does not have any inner HTML element to instantiate the slider. Use block that creates an inner container like WordPress default "group" block.`);
 
 					continue;
 				}
 
-				// Define new classes by the number of blocks enabled for slider carousel.
-				let blockClass = `tws-sliderCarousel--container__${index}--instance__${block}`,
-					innerClass = `tws-sliderCarousel__${index}--instance__${block}`;
-
 				// Get the inner element of the block element to apply class to.
-				let innerElement = blockElement[block].children[0];
+				let $innerElement = $blockElement[block].children[0];
 
-				if (!innerElement.classList.contains(blockChildClass)) {
-					console.error(`The block element with classname "${container.parent}" does not have inner container element with classname as "${blockChildClass}". Slider can't be initialized. These are passed inside function "tws_bfsc_get_elements()". If filter is used to modify it, make sure the returned elements are valid.`);
+				if (!$innerElement.classList.contains($blockChildClass)) {
+					console.error(`The block element with classname "${container.parent}" does not have inner container element with classname as "${$blockChildClass}". Slider can't be initialized. These are passed inside function "tws_bfsc_get_elements()". If filter is used to modify it, make sure the returned elements are valid.`);
 
 					continue;
 				}
 
 				try {
-					blockElement[block].classList.add(blockClass);
-					innerElement.classList.add(innerClass);
-					prepareData(blockElement[block], innerElement, innerClass);
+					$blockElement[block].classList.add($blockClass);
+					$innerElement.classList.add($innerClass);
+					prepareData($blockElement[block], $innerElement, $innerClass);
 				} catch (error) {
 					if (error.name === 'TypeError') {
-						console.error(`The block element with classname "${blockClass}" does not have any slider wrapper element. Add a slider wrapper element inside block element and slide elements inside the wrapper element. Eg - Add a columns block with two column layout: <div class="wp-block-columns"><div class="wp-block-column"></div><div class="wp-block-column"></div></div>`);
+						console.error(`The block element with classname "${$blockClass}" does not have any slider wrapper element. Add a slider wrapper element inside block element and slide elements inside the wrapper element. Eg - Add a columns block with two column layout: <div class="wp-block-columns"><div class="wp-block-column"></div><div class="wp-block-column"></div></div>`);
 					}
 
 					if (error.name === 'Error') {
@@ -205,6 +278,3 @@ if (Array.isArray(SliderElements)) {
 		}
 	});
 }
-
-
-

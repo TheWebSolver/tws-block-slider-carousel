@@ -307,6 +307,26 @@ var createBullets = function createBullets(container, bulletId) {
   container.append($element);
 };
 /**
+ * Creates navigation arrows for the slider.
+ *
+ * @param {Element} container The slider container element.
+ * @param {string} prev The button ID for previous slide.
+ * @param {string} next The button ID for next slide.
+ */
+
+
+var createArrows = function createArrows(container, prev, next) {
+  var $prevBtn = document.createElement('span'),
+      $nextBtn = document.createElement('span');
+  $prevBtn.setAttribute('id', prev);
+  $prevBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--prev swiper-navigation');
+  $nextBtn.setAttribute('id', next);
+  $nextBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--next swiper-navigation');
+  container.classList.add('tws-sliderCarousel__with-arrows');
+  container.append($prevBtn);
+  container.append($nextBtn);
+};
+/**
  * Checks if given array has non-empy value.
  *
  * @param {string[]} value The array to check if any value is empty.
@@ -342,26 +362,29 @@ var addBreakpointClasses = function addBreakpointClasses(container, breakpoints)
  * Prepare slider options from data attribute of the block.
  *
  * @param {Element} block      The block where slider is applied.
- * @param {string} container  The block inner container class which will
+ * @param {Element} container  The block inner container class which will
  *                            actually be the slider container.
  * @throws {Error}
  */
 
 
 var prepareData = function prepareData(block, container, containerClass) {
-  var $slideCount = container.children[0].children.length; // Bail if slide count is less than two.
+  // Get slider wrapper.
+  var $wrapper = block.dataset.wrapper,
+      $wrapperEl = container.querySelector($wrapper),
+      $slideCount = $wrapperEl.children.length; // Bail if slide count is less than two.
 
   if ($slideCount < 2) {
     throw new Error('There must be atleast 2 slide elements inside the wrapper element to initialize the slider.');
-  }
+  } // Get other slider data.
 
-  var $wrapper = block.dataset.wrapper,
-      $slide = block.dataset.slide,
+
+  var $slide = block.dataset.slide,
       $wrapperClass = block.dataset.wrapperclass,
       $slideClass = block.dataset.slideclass,
       $bullet = JSON.parse(block.dataset.bulletcontrol),
       $bulletRender = [],
-      $arrow = block.dataset.arrowcontrol,
+      $arrow = JSON.parse(block.dataset.arrowcontrol),
       $breakpoints = JSON.parse(block.dataset.breakpoints);
 
   if (typeof $bullet.render === 'string') {
@@ -393,30 +416,67 @@ var prepareData = function prepareData(block, container, containerClass) {
     });
   }
 
-  addBreakpointClasses(container, $breakpoints); // Remove default class (if given), add swiperjs classes to wrapper and slides.
-
-  var $wrapperEl = container.querySelector($wrapper),
-      $slideEl = $wrapperEl.querySelectorAll($slide),
-      $slideNumber = 0;
-
-  if (typeof $wrapperClass === 'string' && $wrapperEl.classList.contains($wrapperClass)) {
-    $wrapperEl.classList.remove($wrapperClass);
+  if ($arrow.enabled) {
+    var $arrowIdNext = "".concat(containerClass, "--next"),
+        $arrowIdPrev = "".concat(containerClass, "--prev");
+    createArrows(container, $arrowIdNext, $arrowIdPrev);
+    sliderOptions['navigation'] = {
+      nextEl: "#".concat($arrowIdNext),
+      prevEl: "#".concat($arrowIdPrev)
+    };
   }
 
-  $wrapperEl.classList.add('swiper-wrapper');
-  $slideEl.forEach(function (slide, index) {
-    $slideNumber = index + 1;
+  addBreakpointClasses(container, $breakpoints); // Remove default class (if given), add swiperjs classes to wrapper and slides.
 
-    if (slide.innerHTML === '') {
+  var $wrapperChildNodes = $wrapperEl.childNodes,
+      $slideNumber = 0; // Add the slider wrapper class.
+
+  $wrapperEl.classList.add('swiper-wrapper'); // Remove default applied class to slider wrapper, if given.
+
+  try {
+    if (typeof $wrapperClass === 'string' && $wrapperEl.classList.contains($wrapperClass)) {
+      $wrapperEl.classList.remove($wrapperClass);
+    }
+  } catch (error) {
+    // Not a big issue, just notify on console if something goes wrong.
+    console.error(error);
+  } // Iterate over all child nodes of the slider wrapper to get the slides.
+
+
+  for (var slide = 0; slide < $wrapperChildNodes.length; slide++) {
+    $slideNumber = slide + 1;
+    var $sliderSlide = $wrapperChildNodes[slide],
+        $slideClasses = $sliderSlide.className; // Ignore elements that has no classes applied.
+
+    if (typeof $slideClasses === 'undefined') {
+      continue;
+    }
+
+    var $slideTag = $sliderSlide.tagName.toLowerCase(),
+        $slideName = "".concat($slideTag, ".").concat($slideClasses); // Ignore elements that are not slides.
+
+    if (!$slideName.includes($slide)) {
+      continue;
+    } // An info message if slide is empty.
+
+
+    if ($sliderSlide.innerHTML === '') {
       console.info("The container with classname \"".concat(containerClass, "\" has slide \"").concat($slideNumber, "\" with no content. Is it on purpose?"));
-    }
+    } // Add the slide class.
 
-    if (typeof $slideClass === 'string' && slide.classList.contains($slideClass)) {
-      slide.classList.remove($slideClass);
-    }
 
-    slide.classList.add('swiper-slide');
-  });
+    $sliderSlide.classList.add('swiper-slide'); // Remove default applied class to the slides, if given.
+
+    try {
+      if (typeof $slideClass === 'string' && $sliderSlide.className.includes($slideClass)) {
+        $sliderSlide.classList.remove($slideClass);
+      }
+    } catch (error) {
+      // Not a big issue, just notify on console if something goes wrong.
+      console.error(error);
+    }
+  }
+
   createSlider(".".concat(containerClass), sliderOptions);
 };
 /**
@@ -426,40 +486,44 @@ var prepareData = function prepareData(block, container, containerClass) {
 
 
 if (Array.isArray(SliderElements)) {
-  // Iterate over all block elements to inject slider classes.
+  var $blockIndex = 0,
+      $innerIndex = 0; // Iterate over all block elements to inject slider classes.
+
   SliderElements.forEach(function (container, index) {
-    // Elements' classes passed from localized script.
-    var blockElement = document.getElementsByClassName(container.parent),
-        blockChildClass = container.child;
+    $blockIndex = index + 1; // Elements' classes passed from localized script.
 
-    for (var block = 0; block < blockElement.length; block++) {
-      // Verify that given block is enabled as a slider carousel.
-      if (blockElement[block].classList.contains('tws-block__sliderCarousel')) {
-        // The block element must have only one inner element.
+    var $blockElement = document.getElementsByClassName(container.parent),
+        $blockChildClass = container.child;
+
+    for (var block = 0; block < $blockElement.length; block++) {
+      $innerIndex = block + 1; // Verify that given block is enabled as a slider carousel.
+
+      if ($blockElement[block].classList.contains('tws-block__sliderCarousel')) {
+        // Define new classes by the number of blocks enabled for slider carousel.
+        var $blockClass = "tws-sliderCarousel--container__".concat($blockIndex, "--instance__").concat($innerIndex),
+            $innerClass = "tws-sliderCarousel__".concat($blockIndex, "--instance__").concat($innerIndex); // The block element must have only one inner element.
         // This inner element will be the main container for slider carousel.
-        if (1 !== blockElement[block].children.length) {
-          console.error("The block element with classname \"".concat(container.parent, "\" does not have any inner HTML element to instantiate the slider. Use block that creates an inner container like WordPress default \"group\" block."));
+
+        if (1 !== $blockElement[block].children.length) {
+          console.error("The block element with classname \"".concat($blockClass, "\" does not have any inner HTML element to instantiate the slider. Use block that creates an inner container like WordPress default \"group\" block."));
           continue;
-        } // Define new classes by the number of blocks enabled for slider carousel.
+        } // Get the inner element of the block element to apply class to.
 
 
-        var blockClass = "tws-sliderCarousel--container__".concat(index, "--instance__").concat(block),
-            innerClass = "tws-sliderCarousel__".concat(index, "--instance__").concat(block); // Get the inner element of the block element to apply class to.
+        var $innerElement = $blockElement[block].children[0];
 
-        var innerElement = blockElement[block].children[0];
-
-        if (!innerElement.classList.contains(blockChildClass)) {
-          console.error("The block element with classname \"".concat(container.parent, "\" does not have inner container element with classname as \"").concat(blockChildClass, "\". Slider can't be initialized. These are passed inside function \"tws_bfsc_get_elements()\". If filter is used to modify it, make sure the returned elements are valid."));
+        if (!$innerElement.classList.contains($blockChildClass)) {
+          console.error("The block element with classname \"".concat(container.parent, "\" does not have inner container element with classname as \"").concat($blockChildClass, "\". Slider can't be initialized. These are passed inside function \"tws_bfsc_get_elements()\". If filter is used to modify it, make sure the returned elements are valid."));
           continue;
         }
 
         try {
-          blockElement[block].classList.add(blockClass);
-          innerElement.classList.add(innerClass);
-          prepareData(blockElement[block], innerElement, innerClass);
+          $blockElement[block].classList.add($blockClass);
+          $innerElement.classList.add($innerClass);
+          prepareData($blockElement[block], $innerElement, $innerClass);
         } catch (error) {
           if (error.name === 'TypeError') {
-            console.error("The block element with classname \"".concat(blockClass, "\" does not have any slider wrapper element. Add a slider wrapper element inside block element and slide elements inside the wrapper element. Eg - Add a columns block with two column layout: <div class=\"wp-block-columns\"><div class=\"wp-block-column\"></div><div class=\"wp-block-column\"></div></div>"));
+            console.error("The block element with classname \"".concat($blockClass, "\" does not have any slider wrapper element. Add a slider wrapper element inside block element and slide elements inside the wrapper element. Eg - Add a columns block with two column layout: <div class=\"wp-block-columns\"><div class=\"wp-block-column\"></div><div class=\"wp-block-column\"></div></div>"));
           }
 
           if (error.name === 'Error') {
