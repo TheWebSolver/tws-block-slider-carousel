@@ -1,5 +1,7 @@
 :root {
   --light: #f4f4f4;
+	--light-gray: #eee;
+	--border: #ccc;
   --shadow: rgba(0, 0, 0, 0.15);
   --gutter: 8px;
 	--gutter-2x: 16px;
@@ -15,12 +17,19 @@
 }
 .tws-blockfilter__toggle,
 .tws-slider-carousel__panelBody.is-opened {
-  padding: var(--gutter) 20px var(--gutter) var(--gutter);
+  padding: 0 20px var(--gutter) var(--gutter);
 }
+.tws-blockfilter__toggle {
+	padding-top: var(--gutter);
+}
+.tws-slider-carousel__panelBody.is-opened  > .components-panel__body-title {
+	margin: 0 var(--gutter-n) var(--gutter);
+	background-color: var(--light-gray);
+}
+
 .tws-blockfilter__toggle-inner {
 	padding: var(--gutter-2x) var(--gutter) var(--gutter);
-	margin: var(--gutter) var(--gutter-n) 0 !important;
-	background-color: var(--light);
+	margin: var(--gutter) var(--gutter-n) !important;
 }
 .tws-slider-carousel__panel {
 	background-color: var(--light);
@@ -29,4 +38,15 @@
 }
 .tws-blockfilter__toggle-inner-2 {
 	margin-top: var(--gutter-2x);
+}
+.tws-sliderCarousel__slide-direction {
+	width: 100%;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+}
+.tws-sliderCarousel__slide-direction button {
+	flex-grow: 1;
+	width: 100%;
+	justify-content: center;
 }

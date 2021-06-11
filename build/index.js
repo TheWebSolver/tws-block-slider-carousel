@@ -218,6 +218,18 @@ var sliderCarouselAttributes = {
     type: 'string',
     default: 'slide'
   },
+  slideDirection: {
+    type: 'string',
+    default: 'horizontal'
+  },
+  loopSlides: {
+    type: 'boolean',
+    default: false
+  },
+  autoHeight: {
+    type: 'boolean',
+    default: false
+  },
   wrapperElement: {
     type: 'string',
     default: 'div.wp-block-columns'
@@ -461,7 +473,10 @@ var _wp$components = wp.components,
     TabPanel = _wp$components.TabPanel,
     ToggleControl = _wp$components.ToggleControl,
     TextControl = _wp$components.TextControl,
-    SelectControl = _wp$components.SelectControl;
+    SelectControl = _wp$components.SelectControl,
+    BaseControl = _wp$components.BaseControl,
+    Button = _wp$components.Button,
+    ButtonGroup = _wp$components.ButtonGroup;
 var __ = wp.i18n.__;
 /**
  * Create HOC to add custom attributes to the slider carousel.
@@ -482,6 +497,9 @@ var __ = wp.i18n.__;
         wrapperElement = _props$attributes.wrapperElement,
         slideElement = _props$attributes.slideElement,
         slideEffect = _props$attributes.slideEffect,
+        slideDirection = _props$attributes.slideDirection,
+        loopSlides = _props$attributes.loopSlides,
+        autoHeight = _props$attributes.autoHeight,
         removeWrapperClass = _props$attributes.removeWrapperClass,
         removeSlideClass = _props$attributes.removeSlideClass,
         wrapperClassNameToRemove = _props$attributes.wrapperClassNameToRemove,
@@ -521,7 +539,7 @@ var __ = wp.i18n.__;
      * USE CASE FOR CONVERTING BLOCK INTO SLIDER CAROUSEL:
      * ---------------------------------------------------
      * On the frontend, the PHP function "parse_blocks()" is used to verify
-     * whether a given block is used a slider carousel or not.
+     * whether a given block is used as a slider carousel or not.
      * Loop over all blocks and get the {$block['attrs']} value in an array.
      * This array value will contain attributes set here using "props.setAttributes()".
      * However, all attributes may not get displayed on the PHP side.
@@ -538,7 +556,7 @@ var __ = wp.i18n.__;
     return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(Fragment, null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(BlockEdit, props), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(InspectorControls, null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__enable tws-blockfilter__toggle",
       label: __('Enable Slider Carousel', 'tws-blockfilter'),
-      help: sliderEnabled ? __('This block will be converted to a slider', 'tws-blockfilter') : __('This block is not a slider', 'tws-blockfilter'),
+      help: sliderEnabled ? __('This block will be converted to a slider. It can only be previewed on frontend', 'tws-blockfilter') : __('This block is not a slider', 'tws-blockfilter'),
       checked: sliderEnabled,
       onChange: function onChange() {
         return props.setAttributes({
@@ -559,7 +577,7 @@ var __ = wp.i18n.__;
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__enable-interaction tws-blockfilter__toggle",
       label: __('Allow Touch Move', 'tws-blockfilter'),
-      help: enableInteraction ? __('Enables slider interact with touch, drag, etc.', 'tws-blockfilter') : __('Disables slider touch interaction. Useful in case where only bullet/arrow navigation is preferred.', 'tws-blockfilter'),
+      help: enableInteraction ? __('Enable slider interact with touch, drag, etc.', 'tws-blockfilter') : __('Disable slider touch interaction. Useful in case where only bullet/arrow navigation is preferred', 'tws-blockfilter'),
       checked: enableInteraction,
       onChange: function onChange() {
         return props.setAttributes({
@@ -569,7 +587,7 @@ var __ = wp.i18n.__;
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__enable-bullets tws-blockfilter__toggle",
       label: __('Show bullet pagination', 'tws-blockfilter'),
-      help: enableBullets ? __('Enables slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter') : __('Disables bullet navigation controls', 'tws-blockfilter'),
+      help: enableBullets ? __('Enable slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter') : __('Disable bullet navigation controls', 'tws-blockfilter'),
       checked: enableBullets,
       onChange: function onChange() {
         return props.setAttributes({
@@ -579,7 +597,7 @@ var __ = wp.i18n.__;
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__enable-arrows tws-blockfilter__toggle",
       label: __('Show arrow navigation', 'tws-blockfilter'),
-      help: enableArrows ? __('Enables slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter') : __('Disables arrow navigation controls', 'tws-blockfilter'),
+      help: enableArrows ? __('Enable slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter') : __('Disable arrow navigation controls', 'tws-blockfilter'),
       checked: enableArrows,
       onChange: function onChange() {
         return props.setAttributes({
@@ -589,7 +607,7 @@ var __ = wp.i18n.__;
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__enable-breakpoint tws-blockfilter__toggle",
       label: __('Make slider responsive', 'tws-blockfilter'),
-      help: enableBreakpoints ? __('Enables slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter') : __('Disables slider breakpoint', 'tws-blockfilter'),
+      help: enableBreakpoints ? __('Enable slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter') : __('Disable slider breakpoint', 'tws-blockfilter'),
       checked: enableBreakpoints,
       onChange: function onChange() {
         return props.setAttributes({
@@ -597,7 +615,7 @@ var __ = wp.i18n.__;
         });
       }
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(PanelBody, {
-      title: __("Default Options", 'tws-blockfilter'),
+      title: __("Slider Default Options", 'tws-blockfilter'),
       initialOpen: false,
       className: "tws-slider-carousel__panelBody"
     }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__["__experimentalNumberControl"], {
@@ -636,6 +654,49 @@ var __ = wp.i18n.__;
           slideEffect: value
         });
       }
+    }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(BaseControl, {
+      help: __('Select sliding direction for the slides.', 'tws-blockfilter')
+    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(BaseControl.VisualLabel, null, __('Slide Direction', 'tws-blockfilter')), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ButtonGroup, {
+      "aria-label": __('Slide Direction', 'tws-blockfilter'),
+      className: "tws-sliderCarousel__slide-direction"
+    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(Button, {
+      isSecondary: slideDirection === 'vertical',
+      isPrimary: slideDirection === 'horizontal',
+      "aria-pressed": slideDirection === 'horizontal',
+      onClick: function onClick() {
+        return props.setAttributes({
+          slideDirection: 'horizontal'
+        });
+      }
+    }, __('Horizontal', 'tws-blockfilter')), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(Button, {
+      isSecondary: slideDirection === 'horizontal',
+      isPrimary: slideDirection === 'vertical',
+      "aria-pressed": slideDirection === 'vertical',
+      onClick: function onClick() {
+        return props.setAttributes({
+          slideDirection: 'vertical'
+        });
+      }
+    }, __('Vertical', 'tws-blockfilter')))), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
+      className: "tws-slider-carousel__loop-slide tws-blockfilter__toggle-inner",
+      label: __('Loop slides', 'tws-blockfilter'),
+      help: loopSlides ? __('Will loop the slides continuously', 'tws-blockfilter') : __("Won't loop the slides", "tws-blockfilter"),
+      checked: loopSlides,
+      onChange: function onChange() {
+        return props.setAttributes({
+          loopSlides: !loopSlides
+        });
+      }
+    }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
+      className: "tws-slider-carousel__auto-height tws-blockfilter__toggle-inner",
+      label: __('Auto Height', 'tws-blockfilter'),
+      help: autoHeight ? __('Container height adjust to the slide height', 'tws-blockfilter') : __("Won't adjust container to the slide height", "tws-blockfilter"),
+      checked: autoHeight,
+      onChange: function onChange() {
+        return props.setAttributes({
+          autoHeight: !autoHeight
+        });
+      }
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(TextControl, {
       label: "Wrapper Element",
       value: wrapperElement || '',
@@ -657,28 +718,14 @@ var __ = wp.i18n.__;
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__remove-wrapper-class tws-blockfilter__toggle-inner",
       label: __('Remove default wrapper class', 'tws-blockfilter'),
-      help: removeWrapperClass ? __('Removes given classes from the slider wrapper element in PanelBody "Remove Wrapper Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter'),
+      help: removeWrapperClass ? __('Remove classes from the slider wrapper', 'tws-blockfilter') : __("Won't remove any slider wrapper class", "tws-blockfilter"),
       checked: removeWrapperClass,
       onChange: function onChange() {
         return props.setAttributes({
           removeWrapperClass: !removeWrapperClass
         });
       }
-    }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
-      className: "tws-slider-carousel__remove-slide-class tws-blockfilter__toggle-inner",
-      label: __('Remove default slide class', 'tws-blockfilter'),
-      help: removeSlideClass ? __('Removes given classes from the slider each slide element in PanelBody "Remove Slides Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter'),
-      checked: removeSlideClass,
-      onChange: function onChange() {
-        return props.setAttributes({
-          removeSlideClass: !removeSlideClass
-        });
-      }
-    }))), sliderEnabled && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(Fragment, null, removeWrapperClass && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(PanelBody, {
-      title: __('Remove Wrapper Class', 'tws-blockfilter'),
-      initialOpen: false,
-      className: "tws-slider-carousel__panelBody"
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(TextControl, {
+    }), removeWrapperClass && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(TextControl, {
       value: wrapperClassNameToRemove || '',
       onChange: function onChange(value) {
         return props.setAttributes({
@@ -686,11 +733,17 @@ var __ = wp.i18n.__;
         });
       },
       help: __('Enter default classnames applied to slides wrapper element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')
-    })), removeSlideClass && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(PanelBody, {
-      title: __('Remove Slide Class', 'tws-blockfilter'),
-      initialOpen: false,
-      className: "tws-slider-carousel__panelBody"
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(TextControl, {
+    }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
+      className: "tws-slider-carousel__remove-slide-class tws-blockfilter__toggle-inner",
+      label: __('Remove default slide class', 'tws-blockfilter'),
+      help: removeSlideClass ? __('Remove classes from each slide element', 'tws-blockfilter') : __("Won't remove any slide class", "tws-blockfilter"),
+      checked: removeSlideClass,
+      onChange: function onChange() {
+        return props.setAttributes({
+          removeSlideClass: !removeSlideClass
+        });
+      }
+    }), removeSlideClass && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(TextControl, {
       value: slideClassNameToRemove || '',
       onChange: function onChange(value) {
         return props.setAttributes({
@@ -699,12 +752,12 @@ var __ = wp.i18n.__;
       },
       help: __('Enter default classnames applied to each slide element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')
     })), enableBullets && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(PanelBody, {
-      title: __('Bullet Options', 'tws-blockfilter'),
+      title: __('Slider Bullet Options', 'tws-blockfilter'),
       initialOpen: false,
       className: "tws-slider-carousel__panelBody"
     }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner",
-      label: __('Make Bullet Clickable', 'tws-blockfilter'),
+      label: __('Make bullets clickable', 'tws-blockfilter'),
       help: bulletClickable ? __('Clicking bullet will change slide', 'tws-blockfilter') : __("Clicking bullet won't change slide", "tws-blockfilter"),
       checked: bulletClickable,
       onChange: function onChange() {
@@ -714,7 +767,7 @@ var __ = wp.i18n.__;
       }
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ToggleControl, {
       className: "tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner",
-      label: __('Make Bullets Dynamic', 'tws-blockfilter'),
+      label: __('Make bullets dynamic', 'tws-blockfilter'),
       help: bulletDynamic ? __('Keep only few bullets visible', 'tws-blockfilter') : __("Keep all bullets visible", "tws-blockfilter"),
       checked: bulletDynamic,
       onChange: function onChange() {
@@ -1041,6 +1094,9 @@ var _lodash = lodash,
       wrapperElement = attributes.wrapperElement,
       slideElement = attributes.slideElement,
       slideEffect = attributes.slideEffect,
+      slideDirection = attributes.slideDirection,
+      loopSlides = attributes.loopSlides,
+      autoHeight = attributes.autoHeight,
       removeWrapperClass = attributes.removeWrapperClass,
       removeSlideClass = attributes.removeSlideClass,
       wrapperClassNameToRemove = attributes.wrapperClassNameToRemove,
@@ -1077,7 +1133,10 @@ var _lodash = lodash,
     slidesPerView: defaultSlideNumber,
     spaceBetween: defaultSpace,
     allowTouchMove: enableInteraction,
-    effect: slideEffect
+    effect: slideEffect,
+    direction: slideDirection,
+    loop: loopSlides,
+    autoHeight: autoHeight
   },
       $removeWrapper = removeWrapperClass ? wrapperClassNameToRemove : '',
       $removeSlide = removeSlideClass ? slideClassNameToRemove : '',
@@ -1086,6 +1145,9 @@ var _lodash = lodash,
     clickable: bulletClickable,
     render: bulletDynamic ? '' : bulletRender,
     dynamicBullets: bulletDynamic
+  } : {},
+      $arrowOptions = sliderEnabled ? {
+    enabled: enableArrows
   } : {},
       $one = {
     slidesPerView: breakOneEnabled ? breakOneSlides : 9999,
@@ -1139,7 +1201,7 @@ var _lodash = lodash,
     'data-wrapperclass': $removeWrapper,
     'data-slideclass': $removeSlide,
     'data-bulletcontrol': JSON.stringify($bulletOptions),
-    'data-arrowcontrol': enableArrows,
+    'data-arrowcontrol': JSON.stringify($arrowOptions),
     'data-breakpoints': JSON.stringify($breakpoints)
   })); // Get the above applied data in browser console.
   // console.log(props);

@@ -78,6 +78,18 @@ export const sliderCarouselAttributes = {
 		type: 'string',
 		default: 'slide'
 	},
+	slideDirection: {
+		type: 'string',
+		default: 'horizontal',
+	},
+	loopSlides: {
+		type: 'boolean',
+		default: false,
+	},
+	autoHeight: {
+		type: 'boolean',
+		default: false,
+	},
 	wrapperElement: {
 		type: 'string',
 		default: 'div.wp-block-columns',

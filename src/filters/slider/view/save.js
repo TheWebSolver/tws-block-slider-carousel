@@ -43,6 +43,9 @@ export default (props, blockType, attributes) => {
 		wrapperElement,
 		slideElement,
 		slideEffect,
+		slideDirection,
+		loopSlides,
+		autoHeight,
 		removeWrapperClass,
 		removeSlideClass,
 		wrapperClassNameToRemove,
@@ -82,6 +85,9 @@ export default (props, blockType, attributes) => {
 		spaceBetween: defaultSpace,
 		allowTouchMove: enableInteraction,
 		effect: slideEffect,
+		direction: slideDirection,
+		loop: loopSlides,
+		autoHeight: autoHeight,
 	},
 		$removeWrapper = removeWrapperClass ? wrapperClassNameToRemove : '',
 		$removeSlide = removeSlideClass ? slideClassNameToRemove : '',
@@ -91,6 +97,11 @@ export default (props, blockType, attributes) => {
 				clickable: bulletClickable,
 				render: bulletDynamic ? '' : bulletRender,
 				dynamicBullets: bulletDynamic,
+			}
+			: {},
+			$arrowOptions = sliderEnabled
+			? {
+				enabled: enableArrows
 			}
 			: {},
 		$one = {
@@ -141,7 +152,7 @@ export default (props, blockType, attributes) => {
 				'data-wrapperclass': $removeWrapper,
 				'data-slideclass': $removeSlide,
 				'data-bulletcontrol': JSON.stringify($bulletOptions),
-				'data-arrowcontrol': enableArrows,
+				'data-arrowcontrol': JSON.stringify($arrowOptions),
 				'data-breakpoints': JSON.stringify($breakpoints),
 			})
 		}

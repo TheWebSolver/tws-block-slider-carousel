@@ -29,6 +29,9 @@ const {
 	ToggleControl,
 	TextControl,
 	SelectControl,
+	BaseControl,
+	Button,
+	ButtonGroup,
 } = wp.components;
 const { __ } = wp.i18n;
 
@@ -50,6 +53,9 @@ export default createHigherOrderComponent(BlockEdit => {
 			wrapperElement,
 			slideElement,
 			slideEffect,
+			slideDirection,
+			loopSlides,
+			autoHeight,
 			removeWrapperClass,
 			removeSlideClass,
 			wrapperClassNameToRemove,
@@ -91,7 +97,7 @@ export default createHigherOrderComponent(BlockEdit => {
 		 * USE CASE FOR CONVERTING BLOCK INTO SLIDER CAROUSEL:
 		 * ---------------------------------------------------
 		 * On the frontend, the PHP function "parse_blocks()" is used to verify
-		 * whether a given block is used a slider carousel or not.
+		 * whether a given block is used as a slider carousel or not.
 		 * Loop over all blocks and get the {$block['attrs']} value in an array.
 		 * This array value will contain attributes set here using "props.setAttributes()".
 		 * However, all attributes may not get displayed on the PHP side.
@@ -111,7 +117,7 @@ export default createHigherOrderComponent(BlockEdit => {
 					<ToggleControl
 						className="tws-slider-carousel__enable tws-blockfilter__toggle"
 						label={__('Enable Slider Carousel', 'tws-blockfilter')}
-						help={sliderEnabled ? __('This block will be converted to a slider', 'tws-blockfilter') : __('This block is not a slider', 'tws-blockfilter')}
+						help={sliderEnabled ? __('This block will be converted to a slider. It can only be previewed on frontend', 'tws-blockfilter') : __('This block is not a slider', 'tws-blockfilter')}
 						checked={sliderEnabled}
 						onChange={() => props.setAttributes({ sliderEnabled: !sliderEnabled })}
 					/>
@@ -128,33 +134,33 @@ export default createHigherOrderComponent(BlockEdit => {
 							<ToggleControl
 								className="tws-slider-carousel__enable-interaction tws-blockfilter__toggle"
 								label={__('Allow Touch Move', 'tws-blockfilter')}
-								help={enableInteraction ? __('Enables slider interact with touch, drag, etc.', 'tws-blockfilter') : __('Disables slider touch interaction. Useful in case where only bullet/arrow navigation is preferred.', 'tws-blockfilter')}
+								help={enableInteraction ? __('Enable slider interact with touch, drag, etc.', 'tws-blockfilter') : __('Disable slider touch interaction. Useful in case where only bullet/arrow navigation is preferred', 'tws-blockfilter')}
 								checked={enableInteraction}
 								onChange={() => props.setAttributes({ enableInteraction: !enableInteraction })}
 							/>
 							<ToggleControl
 								className="tws-slider-carousel__enable-bullets tws-blockfilter__toggle"
 								label={__('Show bullet pagination', 'tws-blockfilter')}
-								help={enableBullets ? __('Enables slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter') : __('Disables bullet navigation controls', 'tws-blockfilter')}
+								help={enableBullets ? __('Enable slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter') : __('Disable bullet navigation controls', 'tws-blockfilter')}
 								checked={enableBullets}
 								onChange={() => props.setAttributes({ enableBullets: !enableBullets })}
 							/>
 							<ToggleControl
 								className="tws-slider-carousel__enable-arrows tws-blockfilter__toggle"
 								label={__('Show arrow navigation', 'tws-blockfilter')}
-								help={enableArrows ? __('Enables slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter') : __('Disables arrow navigation controls', 'tws-blockfilter')}
+								help={enableArrows ? __('Enable slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter') : __('Disable arrow navigation controls', 'tws-blockfilter')}
 								checked={enableArrows}
 								onChange={() => props.setAttributes({ enableArrows: !enableArrows })}
 							/>
 							<ToggleControl
 								className="tws-slider-carousel__enable-breakpoint tws-blockfilter__toggle"
 								label={__('Make slider responsive', 'tws-blockfilter')}
-								help={enableBreakpoints ? __('Enables slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter') : __('Disables slider breakpoint', 'tws-blockfilter')}
+								help={enableBreakpoints ? __('Enable slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter') : __('Disable slider breakpoint', 'tws-blockfilter')}
 								checked={enableBreakpoints}
 								onChange={() => props.setAttributes({ enableBreakpoints: !enableBreakpoints })}
 							/>
 							<PanelBody
-								title={__("Default Options", 'tws-blockfilter')}
+								title={__("Slider Default Options", 'tws-blockfilter')}
 								initialOpen={false}
 								className='tws-slider-carousel__panelBody'
 							>
@@ -185,6 +191,46 @@ export default createHigherOrderComponent(BlockEdit => {
 									options={sliderEffects}
 									onChange={value => props.setAttributes({ slideEffect: value })}
 								/>
+								<BaseControl help={__('Select sliding direction for the slides.', 'tws-blockfilter')}>
+									<BaseControl.VisualLabel>
+										{__('Slide Direction', 'tws-blockfilter')}
+									</BaseControl.VisualLabel>
+									<ButtonGroup
+										aria-label={__('Slide Direction', 'tws-blockfilter')}
+										className="tws-sliderCarousel__slide-direction"
+									>
+										<Button
+											isSecondary={slideDirection === 'vertical'}
+											isPrimary={slideDirection === 'horizontal'}
+											aria-pressed={slideDirection === 'horizontal'}
+											onClick={() => props.setAttributes({ slideDirection: 'horizontal' })}
+										>
+											{__('Horizontal', 'tws-blockfilter')}
+										</Button>
+										<Button
+											isSecondary={slideDirection === 'horizontal'}
+											isPrimary={slideDirection === 'vertical'}
+											aria-pressed={slideDirection === 'vertical'}
+											onClick={() => props.setAttributes({ slideDirection: 'vertical' })}
+										>
+											{__('Vertical', 'tws-blockfilter')}
+										</Button>
+									</ButtonGroup>
+								</BaseControl>
+								<ToggleControl
+									className="tws-slider-carousel__loop-slide tws-blockfilter__toggle-inner"
+									label={__('Loop slides', 'tws-blockfilter')}
+									help={loopSlides ? __('Will loop the slides continuously', 'tws-blockfilter') : __("Won't loop the slides", "tws-blockfilter")}
+									checked={loopSlides}
+									onChange={() => props.setAttributes({ loopSlides: !loopSlides })}
+								/>
+								<ToggleControl
+									className="tws-slider-carousel__auto-height tws-blockfilter__toggle-inner"
+									label={__('Auto Height', 'tws-blockfilter')}
+									help={autoHeight ? __('Container height adjust to the slide height', 'tws-blockfilter') : __("Won't adjust container to the slide height", "tws-blockfilter")}
+									checked={autoHeight}
+									onChange={() => props.setAttributes({ autoHeight: !autoHeight })}
+								/>
 								<TextControl
 									label="Wrapper Element"
 									value={wrapperElement || ''}
@@ -200,64 +246,48 @@ export default createHigherOrderComponent(BlockEdit => {
 								<ToggleControl
 									className="tws-slider-carousel__remove-wrapper-class tws-blockfilter__toggle-inner"
 									label={__('Remove default wrapper class', 'tws-blockfilter')}
-									help={removeWrapperClass ? __('Removes given classes from the slider wrapper element in PanelBody "Remove Wrapper Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter')}
+									help={removeWrapperClass ? __('Remove classes from the slider wrapper', 'tws-blockfilter') : __("Won't remove any slider wrapper class", "tws-blockfilter")}
 									checked={removeWrapperClass}
 									onChange={() => props.setAttributes({ removeWrapperClass: !removeWrapperClass })}
 								/>
-								<ToggleControl
-									className="tws-slider-carousel__remove-slide-class tws-blockfilter__toggle-inner"
-									label={__('Remove default slide class', 'tws-blockfilter')}
-									help={removeSlideClass ? __('Removes given classes from the slider each slide element in PanelBody "Remove Slides Class"', 'tws-blockfilter') : __('Does not remove any class', 'tws-blockfilter')}
-									checked={removeSlideClass}
-									onChange={() => props.setAttributes({ removeSlideClass: !removeSlideClass })}
-								/>
-							</PanelBody>
-						</>
-					)}
-					{sliderEnabled && (
-						<>
-							{removeWrapperClass && (
-								<PanelBody
-									title={__('Remove Wrapper Class', 'tws-blockfilter')}
-									initialOpen={false}
-									className='tws-slider-carousel__panelBody'
-								>
+								{removeWrapperClass && (
 									<TextControl
 										value={wrapperClassNameToRemove || ''}
 										onChange={value => props.setAttributes({ wrapperClassNameToRemove: value })}
 										help={__('Enter default classnames applied to slides wrapper element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')}
 									/>
-								</PanelBody>
-							)}
-							{removeSlideClass && (
-								<PanelBody
-									title={__('Remove Slide Class', 'tws-blockfilter')}
-									initialOpen={false}
-									className='tws-slider-carousel__panelBody'
-								>
+								)}
+								<ToggleControl
+									className="tws-slider-carousel__remove-slide-class tws-blockfilter__toggle-inner"
+									label={__('Remove default slide class', 'tws-blockfilter')}
+									help={removeSlideClass ? __('Remove classes from each slide element', 'tws-blockfilter') : __("Won't remove any slide class", "tws-blockfilter")}
+									checked={removeSlideClass}
+									onChange={() => props.setAttributes({ removeSlideClass: !removeSlideClass })}
+								/>
+								{removeSlideClass && (
 									<TextControl
 										value={slideClassNameToRemove || ''}
 										onChange={value => props.setAttributes({ slideClassNameToRemove: value })}
 										help={__('Enter default classnames applied to each slide element to be removed once slider is initialized. This is to prevent WordPress default and/or theme styling interference with slider. Separate multiple classes with spaces.', 'tws-blockfilter')}
 									/>
-								</PanelBody>
-							)}
+								)}
+							</PanelBody>
 							{enableBullets && (
 								<PanelBody
-									title={__('Bullet Options', 'tws-blockfilter')}
+									title={__('Slider Bullet Options', 'tws-blockfilter')}
 									initialOpen={false}
 									className='tws-slider-carousel__panelBody'
 								>
 									<ToggleControl
 										className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
-										label={__('Make Bullet Clickable', 'tws-blockfilter')}
+										label={__('Make bullets clickable', 'tws-blockfilter')}
 										help={bulletClickable ? __('Clicking bullet will change slide', 'tws-blockfilter') : __("Clicking bullet won't change slide", "tws-blockfilter")}
 										checked={bulletClickable}
 										onChange={() => props.setAttributes({ bulletClickable: !bulletClickable })}
 									/>
 									<ToggleControl
 										className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
-										label={__('Make Bullets Dynamic', 'tws-blockfilter')}
+										label={__('Make bullets dynamic', 'tws-blockfilter')}
 										help={bulletDynamic ? __('Keep only few bullets visible', 'tws-blockfilter') : __("Keep all bullets visible", "tws-blockfilter")}
 										checked={bulletDynamic}
 										onChange={() => props.setAttributes({ bulletDynamic: !bulletDynamic })}
