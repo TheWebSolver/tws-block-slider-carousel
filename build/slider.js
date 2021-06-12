@@ -109,6 +109,24 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/arrayLikeToArray.js");
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+}
+
+module.exports = _arrayWithoutHoles;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/defineProperty.js":
 /*!***************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/defineProperty.js ***!
@@ -132,6 +150,22 @@ function _defineProperty(obj, key, value) {
 }
 
 module.exports = _defineProperty;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/iterableToArray.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArray.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+
+module.exports = _iterableToArray;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
@@ -194,6 +228,22 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/nonIterableSpread.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableSpread.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+module.exports = _nonIterableSpread;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/slicedToArray.js":
 /*!**************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
@@ -214,6 +264,30 @@ function _slicedToArray(arr, i) {
 }
 
 module.exports = _slicedToArray;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/toConsumableArray.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/toConsumableArray.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithoutHoles = __webpack_require__(/*! ./arrayWithoutHoles.js */ "./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js");
+
+var iterableToArray = __webpack_require__(/*! ./iterableToArray.js */ "./node_modules/@babel/runtime/helpers/iterableToArray.js");
+
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js");
+
+var nonIterableSpread = __webpack_require__(/*! ./nonIterableSpread.js */ "./node_modules/@babel/runtime/helpers/nonIterableSpread.js");
+
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+}
+
+module.exports = _toConsumableArray;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
@@ -252,8 +326,11 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -327,19 +404,72 @@ var createArrows = function createArrows(container, prev, next) {
   container.append($nextBtn);
 };
 /**
- * Checks if given array has non-empy value.
+ * Checks if given list has all values.
  *
- * @param {string[]} value The array to check if any value is empty.
- * @returns {boolean} True if array has non-empty values, false otherwise.
+ * @param {string[]} list                The list to check all against.
+ * @param {string[]|DOMTokenList} values The values to check. If not passed, `list` will be used.
+ * @param {boolean} isDOM                Whether param `values` are DOM elements. Defaults to `false`.
+ * @param {boolean} error                Throw error message.
+ * @returns {boolean}                    True if list has all values, false otherwise.
  */
 
 
-var hasContent = function hasContent(value) {
-  for (var i = 0; i < value.length; i++) {
-    if (value[i] === "") return false;
+var hasContent = function hasContent(list) {
+  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var isDOM = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var error = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var $isValid = list.every(function (value, index, listAsValues) {
+    var $values = Array.isArray(values) && values.length === 0 ? listAsValues : values; // Verify that value is non-empty and is included in list.
+
+    return isDOM ? $values.contains(value) : value.length > 0 && $values.includes(value);
+  });
+
+  if (error !== '' && !$isValid) {
+    throw new Error(error);
   }
 
-  return true;
+  return $isValid;
+};
+/**
+ * Checks if given thing is a non-empty string.
+ *
+ * @param {any} thing The thing to check for.
+ * @returns {boolean} True if is a string and is not empty, false otherwise.
+ */
+
+
+var isValidString = function isValidString(string) {
+  return typeof string === 'string' && string !== '';
+};
+/**
+ * Converts classes to an array list.
+ *
+ * @param {string} thing The thing to be converted.
+ * @param {string} separator The separator between the thing.
+ * @returns {string[]} values in an array, false if not valid string.
+ */
+
+
+var toArray = function toArray(thing, separator) {
+  if (!isValidString(thing)) {
+    return [];
+  }
+
+  return thing.split(separator).map(function (item) {
+    return item.trim();
+  });
+};
+/**
+ * Verifies if element has given class(es).
+ *
+ * @param {DOMTokenList} classList List of given element's classes.
+ * @param {string} targetList The classes to check.
+ * @returns {boolean} True if DOMTokenList contains the targetList, false otherwise.
+ */
+
+
+var hasClass = function hasClass(classList, targetList) {
+  return hasContent(targetList.split(' '), classList, true);
 };
 /**
  * Adds class by responsive enabled per breakpoint.
@@ -351,7 +481,7 @@ var hasContent = function hasContent(value) {
 
 var addBreakpointClasses = function addBreakpointClasses(container, breakpoints) {
   Object.entries(breakpoints).forEach(function (breakpoint) {
-    var _breakpoint = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default()(breakpoint, 2),
+    var _breakpoint = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2___default()(breakpoint, 2),
         Pixel = _breakpoint[0],
         Responsive = _breakpoint[1];
 
@@ -361,9 +491,10 @@ var addBreakpointClasses = function addBreakpointClasses(container, breakpoints)
 /**
  * Prepare slider options from data attribute of the block.
  *
- * @param {Element} block      The block where slider is applied.
- * @param {Element} container  The block inner container class which will
- *                            actually be the slider container.
+ * @param {Element} block         The block where slider is applied.
+ * @param {Element} container     The block inner container class which will
+ *                                actually be the slider container.
+ * @param {string} containerClass The unique classname for the container.
  * @throws {Error}
  */
 
@@ -371,11 +502,10 @@ var addBreakpointClasses = function addBreakpointClasses(container, breakpoints)
 var prepareData = function prepareData(block, container, containerClass) {
   // Get slider wrapper.
   var $wrapper = block.dataset.wrapper,
-      $wrapperEl = container.querySelector($wrapper),
-      $slideCount = $wrapperEl.children.length; // Bail if slide count is less than two.
+      $wrapperEl = container.querySelector($wrapper); // Case where invalid wrapper element given.
 
-  if ($slideCount < 2) {
-    throw new Error('There must be atleast 2 slide elements inside the wrapper element to initialize the slider.');
+  if ($wrapperEl === null) {
+    throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", wrapper element \"").concat($wrapper, "\" not found."));
   } // Get other slider data.
 
 
@@ -388,9 +518,7 @@ var prepareData = function prepareData(block, container, containerClass) {
       $breakpoints = JSON.parse(block.dataset.breakpoints);
 
   if (typeof $bullet.render === 'string') {
-    $bulletRender = $bullet.render.split(',').map(function (item) {
-      return item.trim();
-    });
+    $bulletRender = toArray($bullet.render, ',');
   } // Start preparing slider carousel options.
 
 
@@ -398,22 +526,6 @@ var prepareData = function prepareData(block, container, containerClass) {
 
   if (Object.keys($breakpoints).length > 0) {
     sliderOptions['breakpoints'] = $breakpoints;
-  }
-
-  if ($bullet.enabled) {
-    var $bulletId = "".concat(containerClass, "--bullets");
-    createBullets(container, $bulletId);
-    sliderOptions['pagination'] = _objectSpread({
-      el: "#".concat($bulletId),
-      clickable: $bullet.clickable,
-      dynamicBullets: $bullet.dynamicBullets
-    }, hasContent($bulletRender) && {
-      renderBullet: function renderBullet(index, className) {
-        // Given bullet content is not equal to number of slides, rendering is not possible.
-        var $bulletContent = $bulletRender.length === $slideCount ? $bulletRender[index] : '';
-        return '<span class="' + className + '">' + $bulletContent + '</span>';
-      }
-    });
   }
 
   if ($arrow.enabled) {
@@ -426,54 +538,101 @@ var prepareData = function prepareData(block, container, containerClass) {
     };
   }
 
-  addBreakpointClasses(container, $breakpoints); // Remove default class (if given), add swiperjs classes to wrapper and slides.
-
-  var $wrapperChildNodes = $wrapperEl.childNodes,
-      $slideNumber = 0; // Add the slider wrapper class.
-
-  $wrapperEl.classList.add('swiper-wrapper'); // Remove default applied class to slider wrapper, if given.
+  addBreakpointClasses(container, $breakpoints);
+  var $wrapperTag = $wrapperEl.tagName.toLowerCase(),
+      $wrapperClassList = toArray($wrapperClass, ' '),
+      $slideNumber = 0;
 
   try {
-    if (typeof $wrapperClass === 'string' && $wrapperEl.classList.contains($wrapperClass)) {
-      $wrapperEl.classList.remove($wrapperClass);
-    }
+    // Case where slider wrapper class to remove doesn't exist.
+    if (isValidString($wrapperClass) && !hasClass($wrapperEl.classList, $wrapperClass)) {
+      throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", slider wrapper element \"<").concat($wrapperTag, ">\" for which \"").concat($wrapperClass, "\" class(es) is set for removal doesn't exist."));
+    } // Add the slider wrapper class.
+
+
+    $wrapperEl.classList.add('swiper-wrapper');
   } catch (error) {
-    // Not a big issue, just notify on console if something goes wrong.
-    console.error(error);
+    throw new Error(error);
+  } finally {
+    // Remove default class, if given and exists in current wrapper element.
+    if (hasClass($wrapperEl.classList, $wrapperClass) && Array.isArray($wrapperClassList)) {
+      var _$wrapperEl$classList;
+
+      (_$wrapperEl$classList = $wrapperEl.classList).remove.apply(_$wrapperEl$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()($wrapperClassList));
+    }
+  }
+
+  var $wrapperChildNodes = $wrapperEl.childNodes,
+      $slideCount = $wrapperEl.children.length; // Bail if slide count is less than two.
+
+  if ($slideCount < 2) {
+    throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", there must be atleast 2 slide elements inside the wrapper element to initialize the slider."));
+  }
+
+  console.log($bulletRender);
+
+  if ($bullet.enabled) {
+    var $bulletId = "".concat(containerClass, "--bullets"),
+        $invalidBulletMsg = "Inside slider container with unique class \"".concat(containerClass, "\", bullets can't be rendered from the given value. There are total \"").concat($slideCount, "\" slides but given value is \"").concat($bullet.render, "\".");
+    createBullets(container, $bulletId);
+    sliderOptions['pagination'] = _objectSpread({
+      el: "#".concat($bulletId),
+      clickable: $bullet.clickable,
+      dynamicBullets: $bullet.dynamicBullets
+    }, hasContent($bulletRender, $bulletRender, false, $invalidBulletMsg) && {
+      renderBullet: function renderBullet(index, className) {
+        // Given bullet content is not equal to number of slides, rendering is not possible.
+        if ($bulletRender.length > 0 && $bulletRender.length !== $slideCount) {
+          console.error($invalidBulletMsg);
+        }
+
+        var $bulletContent = $bulletRender.length === $slideCount ? $bulletRender[index] : '';
+        return '<span class="' + className + '">' + $bulletContent + '</span>';
+      }
+    });
   } // Iterate over all child nodes of the slider wrapper to get the slides.
 
 
   for (var slide = 0; slide < $wrapperChildNodes.length; slide++) {
     $slideNumber = slide + 1;
-    var $sliderSlide = $wrapperChildNodes[slide],
-        $slideClasses = $sliderSlide.className; // Ignore elements that has no classes applied.
+    var $slideNode = $wrapperChildNodes[slide]; // Ignore elements that has no tag.
+    // Eg. this can happen in <ul><li></li></ul> element.
 
-    if (typeof $slideClasses === 'undefined') {
+    if (typeof $slideNode.tagName === 'undefined') {
       continue;
     }
 
-    var $slideTag = $sliderSlide.tagName.toLowerCase(),
-        $slideName = "".concat($slideTag, ".").concat($slideClasses); // Ignore elements that are not slides.
-
-    if (!$slideName.includes($slide)) {
-      continue;
-    } // An info message if slide is empty.
-
-
-    if ($sliderSlide.innerHTML === '') {
-      console.info("The container with classname \"".concat(containerClass, "\" has slide \"").concat($slideNumber, "\" with no content. Is it on purpose?"));
-    } // Add the slide class.
-
-
-    $sliderSlide.classList.add('swiper-slide'); // Remove default applied class to the slides, if given.
+    var $nodeTag = $slideNode.tagName.toLowerCase(),
+        $slideClassList = toArray($slideClass, ' '),
+        $getSlide = toArray($slide, '.'); // eg: "div.wp-block-column" => ['div', 'wp-block-column].
 
     try {
-      if (typeof $slideClass === 'string' && $sliderSlide.className.includes($slideClass)) {
-        $sliderSlide.classList.remove($slideClass);
-      }
+      // Case where slide element tag does not match.
+      if ($getSlide[0] !== $nodeTag) {
+        throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", the slide elements do not match. Element set on slider option is \"<").concat($getSlide[0], ">\" but \"<").concat($nodeTag, ">\" found."));
+      } // An info message if slide is empty.
+
+
+      if ($slideNode.innerHTML === '') {
+        console.info("Inside slider container with unique class \"".concat(containerClass, "\", slide number \"").concat($slideNumber, "\" has no content. Is that on purpose?"));
+      } // Case where slide class to remove doesn't exist.
+
+
+      if (isValidString($slideClass) && !hasClass($slideNode.classList, $slideClass)) {
+        throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", slide element \"<").concat($nodeTag, ">\" for which \"").concat($slideClass, "\" class(es) is set for removal doesn't exist."));
+      } // Add the slide class.
+
+
+      $slideNode.classList.add('swiper-slide');
     } catch (error) {
-      // Not a big issue, just notify on console if something goes wrong.
-      console.error(error);
+      throw new Error(error);
+    } finally {
+      // Remove default class, if given and exists in current slide element.
+      if (hasClass($slideNode.classList, $slideClass) && Array.isArray($slideClassList)) {
+        var _$slideNode$classList;
+
+        (_$slideNode$classList = $slideNode.classList).remove.apply(_$slideNode$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()($slideClassList));
+      }
     }
   }
 
@@ -522,12 +681,15 @@ if (Array.isArray(SliderElements)) {
           $innerElement.classList.add($innerClass);
           prepareData($blockElement[block], $innerElement, $innerClass);
         } catch (error) {
-          if (error.name === 'TypeError') {
+          if (error instanceof TypeError) {
             console.error("The block element with classname \"".concat($blockClass, "\" does not have any slider wrapper element. Add a slider wrapper element inside block element and slide elements inside the wrapper element. Eg - Add a columns block with two column layout: <div class=\"wp-block-columns\"><div class=\"wp-block-column\"></div><div class=\"wp-block-column\"></div></div>"));
           }
 
-          if (error.name === 'Error') {
+          if (error instanceof Error) {
             console.error(error.message);
+          } else {
+            // Log the actual error too.
+            console.error(error);
           }
         }
       }
