@@ -1,0 +1,12 @@
+{
+	"name": "thewebsolver/tws-block-slider-carousel",
+	"description": "Convert WordPress gutenberg blocks into slider carousel.",
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "hsehszroc",
+			"email": "shesh@thewebsolver.com"
+		}
+	],
+	"require": {}
+}
