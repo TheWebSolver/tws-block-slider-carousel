@@ -1,0 +1,12 @@
+root = true
+
+# Apply rules to all files.
+[*]
+indent_style = tab
+indent_size = 2
+line_width = 200
+charset = utf-8
+
+# Apply rules to JS files.
+[*.js]
+indent_style = space
