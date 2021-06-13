@@ -47,6 +47,23 @@ const createBullets = (container, bulletId) => {
 };
 
 /**
+ * Sets contents to display instead of just bullet.
+ *
+ * @param {string[]} options   Bullets render options.
+ * @param {number}   count     Total number of slides.
+ * @param {number}   index     The current bullet position.
+ * @param {string}   className The current bullet class name.
+ * @returns {string}           HTML output with `span` tag for rendering bullet.
+ */
+const setBullets = (options, count, index, className) => {
+  let $bulletContent = options.length === count ? options[index] : '',
+    $bulletCount = index + 1,
+    $bulletClass = `${className} bullet__${$bulletCount}`;
+
+  return '<span class="' + $bulletClass + '">' + $bulletContent + '</span>';
+};
+
+/**
  * Creates navigation arrows for the slider.
  * @param {Element} container The slider container element.
  * @param {string}  prev      The button ID for previous slide.
@@ -231,10 +248,7 @@ const prepareData = (block, container, containerClass) => {
         clickable: $bullet.clickable,
         dynamicBullets: $bullet.dynamicBullets,
         ...(hasContent($bulletRender, $invalidBulletMsg) && {
-          renderBullet: (index, className) => {
-            let $bulletContent = $bulletRender.length === $slideCount ? $bulletRender[index] : '';
-            return '<span class="' + className + '">' + $bulletContent + '</span>';
-          }
+          renderBullet: (index, className) => setBullets($bulletRender, $slideCount, index, className)
         })
       };
     }
@@ -267,9 +281,7 @@ const prepareData = (block, container, containerClass) => {
     try {
       // Case where slide element tag does not match.
       if ($getSlide[0] !== $nodeTag) {
-        throw new Error(
-          `${$msgPrefix}the slide elements do not match. Element set on slider option is "<${$getSlide[0]}>" but "<${$nodeTag}>" found.`
-        );
+        throw new Error(`${$msgPrefix}the slide elements do not match. Element set on slider option is "<${$getSlide[0]}>" but "<${$nodeTag}>" found.`);
       }
 
       // An info message if slide is empty.
