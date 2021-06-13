@@ -366,7 +366,7 @@ var SliderElements = twsSliderCarousel.containers;
  */
 
 var createSlider = function createSlider(instance, options) {
-  new Swiper(instance, options);
+  new Swiper(instance, options); // eslint-disable-line  no-new
 };
 /**
  * Creates navigation bullets for the slider.
@@ -385,7 +385,6 @@ var createBullets = function createBullets(container, bulletId) {
 };
 /**
  * Creates navigation arrows for the slider.
- *
  * @param {Element} container The slider container element.
  * @param {string} prev The button ID for previous slide.
  * @param {string} next The button ID for next slide.
@@ -525,14 +524,14 @@ var prepareData = function prepareData(block, container, containerClass) {
   var sliderOptions = JSON.parse(block.dataset.sliderdefault);
 
   if (Object.keys($breakpoints).length > 0) {
-    sliderOptions['breakpoints'] = $breakpoints;
+    sliderOptions.breakpoints = $breakpoints;
   }
 
   if ($arrow.enabled) {
     var $arrowIdNext = "".concat(containerClass, "--next"),
         $arrowIdPrev = "".concat(containerClass, "--prev");
     createArrows(container, $arrowIdNext, $arrowIdPrev);
-    sliderOptions['navigation'] = {
+    sliderOptions.navigation = {
       nextEl: "#".concat($arrowIdNext),
       prevEl: "#".concat($arrowIdPrev)
     };
@@ -575,7 +574,7 @@ var prepareData = function prepareData(block, container, containerClass) {
     var $bulletId = "".concat(containerClass, "--bullets"),
         $invalidBulletMsg = "Inside slider container with unique class \"".concat(containerClass, "\", bullets can't be rendered from the given value. There are total \"").concat($slideCount, "\" slides but given value is \"").concat($bullet.render, "\".");
     createBullets(container, $bulletId);
-    sliderOptions['pagination'] = _objectSpread({
+    sliderOptions.pagination = _objectSpread({
       el: "#".concat($bulletId),
       clickable: $bullet.clickable,
       dynamicBullets: $bullet.dynamicBullets
@@ -663,8 +662,8 @@ if (Array.isArray(SliderElements)) {
             $innerClass = "tws-sliderCarousel__".concat($blockIndex, "--instance__").concat($innerIndex); // The block element must have only one inner element.
         // This inner element will be the main container for slider carousel.
 
-        if (1 !== $blockElement[block].children.length) {
-          console.error("The block element with classname \"".concat($blockClass, "\" does not have any inner HTML element to instantiate the slider. Use block that creates an inner container like WordPress default \"group\" block."));
+        if ($blockElement[block].children.length !== 1) {
+          console.error("The block element with classname \"".concat($blockClass, "\" does not have any inner HTML element to instantiate the slider. Use the block that creates an inner container like WordPress default \"group\" block."));
           continue;
         } // Get the inner element of the block element to apply class to.
 

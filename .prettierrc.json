@@ -1,0 +1,18 @@
+{
+  "trailingComma": "none",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": false,
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "semi": true,
+        "singleQuote": true,
+        "arrowParens": "avoid",
+        "printWidth": 200,
+        "proseWrap": "preserve"
+      }
+    }
+  ]
+}

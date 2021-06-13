@@ -19,11 +19,11 @@
 /**
  * Gets all filters `index.js` files and imports them.
  *
- * @param {function} request function `webpackContext()` to request
+ * @param {Function} request function `webpackContext()` to request
  *                           all `index.js` file found inside `src/filters` directory.
  */
-function importAll(request) {
-	request.keys().forEach(request);
-}
+const importAll = (request) => {
+  request.keys().forEach(request);
+};
 // Modified blocks using filters.
 importAll(require.context('./filters', true, /index\.js$/));

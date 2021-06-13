@@ -1,0 +1,33 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "standard"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "semi": [1, "always"],
+    "one-var": "off",
+    "prefer-const": "off",
+    "react/prop-types": [
+      0,
+      {
+        "skipUndeclared": true
+      }
+    ],
+    "indent": ["error", 2]
+  },
+  "globals": {
+    "twsSliderCarousel": "readonly",
+    "wp": "readonly",
+    "Swiper": "readonly",
+    "lodash": "readonly"
+  }
+}

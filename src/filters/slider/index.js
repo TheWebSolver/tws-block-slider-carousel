@@ -16,11 +16,12 @@
  * ╚═╝      ╚═╝    ═══════════════╝
  */
 
+import sliderCarouselControls from './view/inspector';
+import saveContainer from './view/save';
+import { eligibleBlocks, sliderCarouselAttributes } from './controller/props';
+
 const { addFilter } = wp.hooks;
 const { assign } = lodash;
-import sliderCarouselControls from "./view/inspector";
-import saveContainer from "./view/save";
-import { eligibleBlocks, sliderCarouselAttributes } from "./controller/props";
 
 /**
  * Add data attributes to slider carousel container blocks.
@@ -31,21 +32,33 @@ import { eligibleBlocks, sliderCarouselAttributes } from "./controller/props";
  * @returns {object} Modified block block.
  */
 const addDataAttributes = (block, name) => {
-	// Bail early if not slider Carousel container.
-	if (!eligibleBlocks.includes(name)) {
-		return block;
-	}
+  // Bail early if not slider Carousel container.
+  if (!eligibleBlocks.includes(name)) {
+    return block;
+  }
 
-	block.attributes = assign(block.attributes, sliderCarouselAttributes);
+  block.attributes = assign(block.attributes, sliderCarouselAttributes);
 
-	return block;
+  return block;
 };
 
 // Modify the core Blocks.
-addFilter("blocks.registerBlockType", "tws/sliderCarousel/register", addDataAttributes);
+addFilter(
+  'blocks.registerBlockType',
+  'tws/sliderCarousel/register',
+  addDataAttributes
+);
 
 // Add controls to inspector panel.
-addFilter("editor.BlockEdit", "tws/sliderCarousel/edit", sliderCarouselControls);
+addFilter(
+  'editor.BlockEdit',
+  'tws/sliderCarousel/edit',
+  sliderCarouselControls
+);
 
 // Add data attributes to container block element on save.
-addFilter("blocks.getSaveContent.extraProps", "tws/sliderCarousel/save", saveContainer);
+addFilter(
+  'blocks.getSaveContent.extraProps',
+  'tws/sliderCarousel/save',
+  saveContainer
+);
