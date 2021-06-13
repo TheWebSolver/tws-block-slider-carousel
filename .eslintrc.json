@@ -29,5 +29,6 @@
     "wp": "readonly",
     "Swiper": "readonly",
     "lodash": "readonly"
-  }
+  },
+	"ignorePatterns": ["**/node_modules/", "**/build/"]
 }
