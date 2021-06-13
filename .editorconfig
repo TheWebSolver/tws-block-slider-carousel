@@ -6,6 +6,7 @@ indent_style = tab
 indent_size = 2
 line_width = 200
 charset = utf-8
+end_of_line = lf
 
 # Apply rules to JS files.
 [*.js]
