@@ -22,7 +22,7 @@
  * @param {Function} request function `webpackContext()` to request
  *                           all `index.js` file found inside `src/filters` directory.
  */
-const importAll = (request) => {
+const importAll = request => {
   request.keys().forEach(request);
 };
 // Modified blocks using filters.

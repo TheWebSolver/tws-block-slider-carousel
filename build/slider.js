@@ -324,10 +324,10 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
 /* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__);
 
@@ -336,7 +336,9 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+/* eslint-disable no-throw-literal */
 
 /**
  * -----------------------------------
@@ -357,12 +359,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  *
  * @type {object}
  */
-var SliderElements = twsSliderCarousel.containers;
+var _twsSliderCarousel = twsSliderCarousel,
+    containers = _twsSliderCarousel.containers,
+    arrows = _twsSliderCarousel.arrows;
 /**
  * Creates a swiper instance.
  *
  * @param {string} instance The swiper main container class.
- * @param {object} options The swiper options.
+ * @param {object} options  The swiper options.
  */
 
 var createSlider = function createSlider(instance, options) {
@@ -372,7 +376,7 @@ var createSlider = function createSlider(instance, options) {
  * Creates navigation bullets for the slider.
  *
  * @param {Element} container The slider container element.
- * @param {string} bulletId   The bullet ID.
+ * @param {string}  bulletId  The bullet ID.
  */
 
 
@@ -386,8 +390,8 @@ var createBullets = function createBullets(container, bulletId) {
 /**
  * Creates navigation arrows for the slider.
  * @param {Element} container The slider container element.
- * @param {string} prev The button ID for previous slide.
- * @param {string} next The button ID for next slide.
+ * @param {string}  prev      The button ID for previous slide.
+ * @param {string}  next      The button ID for next slide.
  */
 
 
@@ -395,9 +399,11 @@ var createArrows = function createArrows(container, prev, next) {
   var $prevBtn = document.createElement('span'),
       $nextBtn = document.createElement('span');
   $prevBtn.setAttribute('id', prev);
-  $prevBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--prev swiper-navigation');
+  $prevBtn.setAttribute('class', 'tws-sliderCarousel__arrow prev swiper-navigation');
+  $prevBtn.innerHTML = arrows.prev;
   $nextBtn.setAttribute('id', next);
-  $nextBtn.setAttribute('class', 'tws-sliderCarousel__arrow arrow--next swiper-navigation');
+  $nextBtn.setAttribute('class', 'tws-sliderCarousel__arrow next swiper-navigation');
+  $nextBtn.innerHTML = arrows.next;
   container.classList.add('tws-sliderCarousel__with-arrows');
   container.append($prevBtn);
   container.append($nextBtn);
@@ -405,18 +411,19 @@ var createArrows = function createArrows(container, prev, next) {
 /**
  * Checks if given list has all values.
  *
- * @param {string[]} list                The list to check all against.
- * @param {string[]|DOMTokenList} values The values to check. If not passed, `list` will be used.
- * @param {boolean} isDOM                Whether param `values` are DOM elements. Defaults to `false`.
- * @param {boolean} error                Throw error message.
- * @returns {boolean}                    True if list has all values, false otherwise.
+ * @param   {string[]} list                The list to check all against.
+ * @param   {string} error                 Throw error message.
+ * @param   {string[]|DOMTokenList} values The values to check. If not passed, `list` will be used.
+ * @param   {boolean} isDOM                Whether param `values` are DOM elements.
+ *                                         Defaults to `false`.
+ * @returns {boolean}                      True if list has all values, false otherwise.
  */
 
 
 var hasContent = function hasContent(list) {
-  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var isDOM = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var error = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var values = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var isDOM = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   var $isValid = list.every(function (value, index, listAsValues) {
     var $values = Array.isArray(values) && values.length === 0 ? listAsValues : values; // Verify that value is non-empty and is included in list.
 
@@ -432,20 +439,20 @@ var hasContent = function hasContent(list) {
 /**
  * Checks if given thing is a non-empty string.
  *
- * @param {any} thing The thing to check for.
- * @returns {boolean} True if is a string and is not empty, false otherwise.
+ * @param   {any}     thing The thing to check for.
+ * @returns {boolean}       True if is a string and is not empty, false otherwise.
  */
 
 
-var isValidString = function isValidString(string) {
-  return typeof string === 'string' && string !== '';
+var isValidString = function isValidString(thing) {
+  return typeof thing === 'string' && thing !== '';
 };
 /**
  * Converts classes to an array list.
  *
- * @param {string} thing The thing to be converted.
- * @param {string} separator The separator between the thing.
- * @returns {string[]} values in an array, false if not valid string.
+ * @param   {string}   thing     The thing to be converted.
+ * @param   {string}   separator The separator between the thing.
+ * @returns {string[]}           Values in an array, false if not valid string.
  */
 
 
@@ -461,19 +468,19 @@ var toArray = function toArray(thing, separator) {
 /**
  * Verifies if element has given class(es).
  *
- * @param {DOMTokenList} classList List of given element's classes.
- * @param {string} targetList The classes to check.
- * @returns {boolean} True if DOMTokenList contains the targetList, false otherwise.
+ * @param {DOMTokenList} classList  List of given element's classes.
+ * @param {string}       targetList The classes to check.
+ * @returns {boolean}               True if DOMTokenList contains the targetList, false otherwise.
  */
 
 
 var hasClass = function hasClass(classList, targetList) {
-  return hasContent(targetList.split(' '), classList, true);
+  return hasContent(toArray(targetList, ' '), '', classList, true);
 };
 /**
  * Adds class by responsive enabled per breakpoint.
  *
- * @param {string} container The slider container class.
+ * @param {string} container   The slider container class.
  * @param {object} breakpoints The brekpoints data.
  */
 
@@ -490,10 +497,10 @@ var addBreakpointClasses = function addBreakpointClasses(container, breakpoints)
 /**
  * Prepare slider options from data attribute of the block.
  *
- * @param {Element} block         The block where slider is applied.
- * @param {Element} container     The block inner container class which will
- *                                actually be the slider container.
- * @param {string} containerClass The unique classname for the container.
+ * @param {Element} block          The block where slider is applied.
+ * @param {Element} container      The block inner container class which will
+ *                                 actually be the slider container.
+ * @param {string}  containerClass The unique classname for the container.
  * @throws {Error}
  */
 
@@ -501,10 +508,11 @@ var addBreakpointClasses = function addBreakpointClasses(container, breakpoints)
 var prepareData = function prepareData(block, container, containerClass) {
   // Get slider wrapper.
   var $wrapper = block.dataset.wrapper,
-      $wrapperEl = container.querySelector($wrapper); // Case where invalid wrapper element given.
+      $wrapperEl = container.querySelector($wrapper),
+      $msgPrefix = "Inside slider container with unique class \"".concat(containerClass, "\", "); // Case where invalid wrapper element given.
 
   if ($wrapperEl === null) {
-    throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", wrapper element \"").concat($wrapper, "\" not found."));
+    throw new Error("".concat($msgPrefix, "wrapper element \"").concat($wrapper, "\" not found."));
   } // Get other slider data.
 
 
@@ -530,7 +538,7 @@ var prepareData = function prepareData(block, container, containerClass) {
   if ($arrow.enabled) {
     var $arrowIdNext = "".concat(containerClass, "--next"),
         $arrowIdPrev = "".concat(containerClass, "--prev");
-    createArrows(container, $arrowIdNext, $arrowIdPrev);
+    createArrows(container, $arrowIdPrev, $arrowIdNext);
     sliderOptions.navigation = {
       nextEl: "#".concat($arrowIdNext),
       prevEl: "#".concat($arrowIdPrev)
@@ -540,16 +548,42 @@ var prepareData = function prepareData(block, container, containerClass) {
   addBreakpointClasses(container, $breakpoints);
   var $wrapperTag = $wrapperEl.tagName.toLowerCase(),
       $wrapperClassList = toArray($wrapperClass, ' '),
+      $slideCount = $wrapperEl.children.length,
       $slideNumber = 0;
 
   try {
     // Case where slider wrapper class to remove doesn't exist.
     if (isValidString($wrapperClass) && !hasClass($wrapperEl.classList, $wrapperClass)) {
-      throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", slider wrapper element \"<").concat($wrapperTag, ">\" for which \"").concat($wrapperClass, "\" class(es) is set for removal doesn't exist."));
+      throw "".concat($msgPrefix, "slider wrapper element \"<").concat($wrapperTag, ">\" for which \"").concat($wrapperClass, "\" class(es) is set for removal doesn't exist.");
     } // Add the slider wrapper class.
 
 
-    $wrapperEl.classList.add('swiper-wrapper');
+    $wrapperEl.classList.add('swiper-wrapper'); // Case where slider has less than 2 slides.
+
+    if ($slideCount < 2) {
+      throw "".concat($msgPrefix, "there must be atleast 2 slide elements inside the wrapper element to initialize the slider.");
+    }
+
+    if ($bullet.enabled) {
+      var $bulletId = "".concat(containerClass, "--bullets"),
+          $invalidBulletMsg = "".concat($msgPrefix, "bullets can't be rendered from the given value. There are total \"").concat($slideCount, "\" slides but given value is \"").concat($bullet.render, "\"."); // Case where bullet rendering was given but not equal to number of slides.
+
+      if ($bulletRender.length > 0 && $bulletRender.length !== $slideCount) {
+        throw $invalidBulletMsg;
+      }
+
+      createBullets(container, $bulletId);
+      sliderOptions.pagination = _objectSpread({
+        el: "#".concat($bulletId),
+        clickable: $bullet.clickable,
+        dynamicBullets: $bullet.dynamicBullets
+      }, hasContent($bulletRender, $invalidBulletMsg) && {
+        renderBullet: function renderBullet(index, className) {
+          var $bulletContent = $bulletRender.length === $slideCount ? $bulletRender[index] : '';
+          return '<span class="' + className + '">' + $bulletContent + '</span>';
+        }
+      });
+    }
   } catch (error) {
     throw new Error(error);
   } finally {
@@ -557,40 +591,11 @@ var prepareData = function prepareData(block, container, containerClass) {
     if (hasClass($wrapperEl.classList, $wrapperClass) && Array.isArray($wrapperClassList)) {
       var _$wrapperEl$classList;
 
-      (_$wrapperEl$classList = $wrapperEl.classList).remove.apply(_$wrapperEl$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()($wrapperClassList));
+      (_$wrapperEl$classList = $wrapperEl.classList).remove.apply(_$wrapperEl$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()($wrapperClassList));
     }
   }
 
-  var $wrapperChildNodes = $wrapperEl.childNodes,
-      $slideCount = $wrapperEl.children.length; // Bail if slide count is less than two.
-
-  if ($slideCount < 2) {
-    throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", there must be atleast 2 slide elements inside the wrapper element to initialize the slider."));
-  }
-
-  console.log($bulletRender);
-
-  if ($bullet.enabled) {
-    var $bulletId = "".concat(containerClass, "--bullets"),
-        $invalidBulletMsg = "Inside slider container with unique class \"".concat(containerClass, "\", bullets can't be rendered from the given value. There are total \"").concat($slideCount, "\" slides but given value is \"").concat($bullet.render, "\".");
-    createBullets(container, $bulletId);
-    sliderOptions.pagination = _objectSpread({
-      el: "#".concat($bulletId),
-      clickable: $bullet.clickable,
-      dynamicBullets: $bullet.dynamicBullets
-    }, hasContent($bulletRender, $bulletRender, false, $invalidBulletMsg) && {
-      renderBullet: function renderBullet(index, className) {
-        // Given bullet content is not equal to number of slides, rendering is not possible.
-        if ($bulletRender.length > 0 && $bulletRender.length !== $slideCount) {
-          console.error($invalidBulletMsg);
-        }
-
-        var $bulletContent = $bulletRender.length === $slideCount ? $bulletRender[index] : '';
-        return '<span class="' + className + '">' + $bulletContent + '</span>';
-      }
-    });
-  } // Iterate over all child nodes of the slider wrapper to get the slides.
-
+  var $wrapperChildNodes = $wrapperEl.childNodes; // Iterate over all child nodes of the slider wrapper to get the slides.
 
   for (var slide = 0; slide < $wrapperChildNodes.length; slide++) {
     $slideNumber = slide + 1;
@@ -608,17 +613,17 @@ var prepareData = function prepareData(block, container, containerClass) {
     try {
       // Case where slide element tag does not match.
       if ($getSlide[0] !== $nodeTag) {
-        throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", the slide elements do not match. Element set on slider option is \"<").concat($getSlide[0], ">\" but \"<").concat($nodeTag, ">\" found."));
+        throw new Error("".concat($msgPrefix, "the slide elements do not match. Element set on slider option is \"<").concat($getSlide[0], ">\" but \"<").concat($nodeTag, ">\" found."));
       } // An info message if slide is empty.
 
 
       if ($slideNode.innerHTML === '') {
-        console.info("Inside slider container with unique class \"".concat(containerClass, "\", slide number \"").concat($slideNumber, "\" has no content. Is that on purpose?"));
+        console.info("".concat($msgPrefix, "slide number \"").concat($slideNumber, "\" has no content. Is that on purpose?"));
       } // Case where slide class to remove doesn't exist.
 
 
       if (isValidString($slideClass) && !hasClass($slideNode.classList, $slideClass)) {
-        throw new Error("Inside slider container with unique class \"".concat(containerClass, "\", slide element \"<").concat($nodeTag, ">\" for which \"").concat($slideClass, "\" class(es) is set for removal doesn't exist."));
+        throw new Error("".concat($msgPrefix, "slide element \"<").concat($nodeTag, ">\" for which \"").concat($slideClass, "\" class(es) is set for removal doesn't exist."));
       } // Add the slide class.
 
 
@@ -630,7 +635,7 @@ var prepareData = function prepareData(block, container, containerClass) {
       if (hasClass($slideNode.classList, $slideClass) && Array.isArray($slideClassList)) {
         var _$slideNode$classList;
 
-        (_$slideNode$classList = $slideNode.classList).remove.apply(_$slideNode$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()($slideClassList));
+        (_$slideNode$classList = $slideNode.classList).remove.apply(_$slideNode$classList, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()($slideClassList));
       }
     }
   }
@@ -643,11 +648,11 @@ var prepareData = function prepareData(block, container, containerClass) {
  */
 
 
-if (Array.isArray(SliderElements)) {
+if (Array.isArray(containers)) {
   var $blockIndex = 0,
       $innerIndex = 0; // Iterate over all block elements to inject slider classes.
 
-  SliderElements.forEach(function (container, index) {
+  containers.forEach(function (container, index) {
     $blockIndex = index + 1; // Elements' classes passed from localized script.
 
     var $blockElement = document.getElementsByClassName(container.parent),
@@ -671,7 +676,7 @@ if (Array.isArray(SliderElements)) {
         var $innerElement = $blockElement[block].children[0];
 
         if (!$innerElement.classList.contains($blockChildClass)) {
-          console.error("The block element with classname \"".concat(container.parent, "\" does not have inner container element with classname as \"").concat($blockChildClass, "\". Slider can't be initialized. These are passed inside function \"tws_bfsc_get_elements()\". If filter is used to modify it, make sure the returned elements are valid."));
+          console.error("The block element with classname \"".concat(container.parent, "\" does not have inner container element with classname as \"").concat($blockChildClass, "\". Slider can't be initialized. These are passed inside function \"tws_bfsc_get_elements()\". If filter is used to modify it, make sure the returned element classes are valid."));
           continue;
         }
 

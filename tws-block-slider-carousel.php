@@ -132,10 +132,27 @@ function tws_bfsc_init() {
 		true
 	);
 
+	/**
+	 * WPHOOK: Filter -> slider navigation arrows.
+	 *
+	 * @param string[] $arrows The arrow icons/images.
+	 * @var   string[]
+	 */
+	$arrows = apply_filters(
+		'hzfex_slider_carousel_navigation_arrows',
+		array(
+			'prev' => '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M15.61 7.41L14.2 6l-6 6 6 6 1.41-1.41L11.03 12l4.58-4.59z"></path></svg>',
+			'next' => '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z"></path></svg>',
+		)
+	);
+
 	wp_localize_script(
 		'tws-slider-carousel-script',
 		'twsSliderCarousel',
-		array( 'containers' => tws_bfsc_get_elements() )
+		array(
+			'containers' => tws_bfsc_get_elements(),
+			'arrows'     => $arrows,
+		)
 	);
 
 	if ( function_exists( 'wp_set_script_translations' ) ) {
