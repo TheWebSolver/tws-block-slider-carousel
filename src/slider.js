@@ -225,7 +225,7 @@ const prepareData = (block, container, containerClass) => {
     }
 
     // Add the slider wrapper class.
-    $wrapperEl.classList.add('swiper-wrapper');
+    $wrapperEl.classList.add('swiper-wrapper', 'tws-sliderCarousel__wrapper');
 
     // Case where slider has less than 2 slides.
     if ($slideCount < 2) {
