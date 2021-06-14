@@ -37,6 +37,7 @@ export default (props, blockType, attributes) => {
 
   const {
     sliderEnabled,
+    sliderId,
     defaultEnabled,
     defaultSlideNumber,
     defaultSpace,
@@ -144,6 +145,7 @@ export default (props, blockType, attributes) => {
   assign(props, {
     ...(sliderEnabled && {
       className: `${props.className} tws-block__sliderCarousel`,
+      'data-sliderid': sliderId,
       'data-sliderdefault': JSON.stringify($defaults),
       'data-wrapper': wrapperElement,
       'data-slide': slideElement,

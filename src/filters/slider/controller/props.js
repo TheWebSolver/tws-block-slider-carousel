@@ -62,6 +62,9 @@ export const sliderCarouselAttributes = {
     type: 'boolean',
     default: false
   },
+  sliderId: {
+    type: 'string'
+  },
   defaultSlideNumber: {
     type: 'number',
     default: 1

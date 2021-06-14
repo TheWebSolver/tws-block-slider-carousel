@@ -14,11 +14,9 @@
  */
 
 /**
- * Supported WordPress blocks for creating slider instance.
- *
- * @type {object}
+ * Localized slider data.
  */
-const { containers, arrows } = twsSliderCarousel;
+const { containers, arrows, bullets } = twsSliderCarousel;
 
 /**
  * Creates a swiper instance.
@@ -33,21 +31,28 @@ const createSlider = (instance, options) => {
 /**
  * Creates navigation bullets for the slider.
  *
- * @param {Element} container The slider container element.
- * @param {string}  bulletId  The bullet ID.
+ * @param {Element}  container  The slider container element.
+ * @param {string}   bulletId   The bullet ID.
+ * @param {boolean}  hasRender  Whether bullet has custom content to render.
+ * @returns {object}            The bullets node object.
  */
-const createBullets = (container, bulletId) => {
+const createBullets = (container, bulletId, hasRender) => {
   let $element = document.createElement('div');
 
   $element.setAttribute('id', bulletId);
   $element.setAttribute('class', 'tws-sliderCarousel__bullets swiper-pagination');
 
+  if (hasRender) {
+    $element.classList.add('has-render-content');
+  }
+
   container.classList.add('tws-sliderCarousel__with-bullets');
-  container.append($element);
+
+  return container.appendChild($element);
 };
 
 /**
- * Sets contents to display instead of just bullet.
+ * Sets contents to display instead of just bullets.
  *
  * @param {string[]} options   Bullets render options.
  * @param {number}   count     Total number of slides.
@@ -57,17 +62,17 @@ const createBullets = (container, bulletId) => {
  */
 const setBullets = (options, count, index, className) => {
   let $bulletContent = options.length === count ? options[index] : '',
-    $bulletCount = index + 1,
-    $bulletClass = `${className} bullet__${$bulletCount}`;
+    $bulletCount = index + 1;
 
-  return '<span class="' + $bulletClass + '">' + $bulletContent + '</span>';
+  return `<span class="${className} bullet__${$bulletCount}">${$bulletContent}</span>`;
 };
 
 /**
  * Creates navigation arrows for the slider.
- * @param {Element} container The slider container element.
- * @param {string}  prev      The button ID for previous slide.
- * @param {string}  next      The button ID for next slide.
+ * @param {Element}  container The slider container element.
+ * @param {string}   prev      The button ID for previous slide.
+ * @param {string}   next      The button ID for next slide.
+ * @returns {object}           The appended prev/next arrow DOM objects.
  */
 const createArrows = (container, prev, next) => {
   let $prevBtn = document.createElement('span'),
@@ -81,51 +86,62 @@ const createArrows = (container, prev, next) => {
   $nextBtn.innerHTML = arrows.next;
 
   container.classList.add('tws-sliderCarousel__with-arrows');
-  container.append($prevBtn);
-  container.append($nextBtn);
-};
 
-/**
- * Checks if given list has all values.
- *
- * @param   {string[]} list                The list to check all against.
- * @param   {string} error                 Throw error message.
- * @param   {string[]|DOMTokenList} values The values to check. If not passed, `list` will be used.
- * @param   {boolean} isDOM                Whether param `values` are DOM elements.
- *                                         Defaults to `false`.
- * @returns {boolean}                      True if list has all values, false otherwise.
- */
-const hasContent = (list, error = '', values = [], isDOM = false) => {
-  let $isValid = list.every((value, index, listAsValues) => {
-    let $values = Array.isArray(values) && values.length === 0 ? listAsValues : values;
-
-    // Verify that value is non-empty and is included in list.
-    return isDOM ? $values.contains(value) : value.length > 0 && $values.includes(value);
-  });
-
-  if (error !== '' && !$isValid) {
-    throw new Error(error);
-  }
-
-  return $isValid;
+  return {
+    prev: container.appendChild($prevBtn),
+    next: container.appendChild($nextBtn)
+  };
 };
 
 /**
  * Checks if given thing is a non-empty string.
  *
  * @param   {any}     thing The thing to check for.
- * @returns {boolean}       True if is a string and is not empty, false otherwise.
+ * @returns {boolean}       True if is a non-empty string, false otherwise.
  */
 const isValidString = thing => {
   return typeof thing === 'string' && thing !== '';
 };
 
 /**
- * Converts classes to an array list.
+ * Checks if given list has all values.
+ *
+ * @param   {string[]}              list   The list to check all `values` param against.
+ * @param   {string}                error  Error message to throw. Defaults to an empty `string`.
+ * @param   {boolean}               strict Check whether list is valid.
+ *                                         Defaults to `false` (won't check the list length).
+ * @param   {string[]|DOMTokenList} values The values to check. If not passed, `list` will be used.
+ * @returns {boolean}                      True if list has all values (or list is an empty array), false otherwise.
+ *
+ * @throws Error message if `value` is not valid string or all `values` is not present inside the `list`.
+ */
+const hasContent = (list, error = '', strict = false, values = []) => {
+  // Given list is not an array, throw error message.
+  if (!Array.isArray(list)) throw 'The given list is not an array.';
+
+  let $isValidContent = list.every((value, index, listAsValues) => {
+    if (isValidString(error) && !isValidString(value)) throw error;
+
+    let $values = Array.isArray(values) && values.length === 0 ? listAsValues : values;
+
+    return values instanceof Array ? $values.includes(value) : $values.contains(value);
+  });
+
+  // Error message given and list is not valid, throw error message.
+  if (isValidString(error) && !$isValidContent) throw error;
+
+  // Strict check enabled, error message given and list has no content, throw error message.
+  if (strict && isValidString(error) && list.length === 0) throw error;
+
+  return $isValidContent;
+};
+
+/**
+ * Converts given string to an array.
  *
  * @param   {string}   thing     The thing to be converted.
- * @param   {string}   separator The separator between the thing.
- * @returns {string[]}           Values in an array, false if not valid string.
+ * @param   {string}   separator The separator between the thing (space, comma, etc).
+ * @returns {string[]}           Values in an array, empty array if invalid string.
  */
 const toArray = (thing, separator) => {
   if (!isValidString(thing)) {
@@ -136,18 +152,7 @@ const toArray = (thing, separator) => {
 };
 
 /**
- * Verifies if element has given class(es).
- *
- * @param {DOMTokenList} classList  List of given element's classes.
- * @param {string}       targetList The classes to check.
- * @returns {boolean}               True if DOMTokenList contains the targetList, false otherwise.
- */
-const hasClass = (classList, targetList) => {
-  return hasContent(toArray(targetList, ' '), '', classList, true);
-};
-
-/**
- * Adds class by responsive enabled per breakpoint.
+ * Adds responsive enabled/disabled classes to slider container.
  *
  * @param {string} container   The slider container class.
  * @param {object} breakpoints The brekpoints data.
@@ -170,7 +175,8 @@ const addBreakpointClasses = (container, breakpoints) => {
  */
 const prepareData = (block, container, containerClass) => {
   // Get slider wrapper.
-  let $wrapper = block.dataset.wrapper,
+  let $sliderId = block.dataset.sliderid,
+    $wrapper = block.dataset.wrapper,
     $wrapperEl = container.querySelector($wrapper),
     $msgPrefix = `Inside slider container with unique class "${containerClass}", `;
 
@@ -184,12 +190,13 @@ const prepareData = (block, container, containerClass) => {
     $wrapperClass = block.dataset.wrapperclass,
     $slideClass = block.dataset.slideclass,
     $bullet = JSON.parse(block.dataset.bulletcontrol),
-    $bulletRender = [],
+    $bulletRender = toArray($bullet.render, ','),
     $arrow = JSON.parse(block.dataset.arrowcontrol),
     $breakpoints = JSON.parse(block.dataset.breakpoints);
 
-  if (typeof $bullet.render === 'string') {
-    $bulletRender = toArray($bullet.render, ',');
+  // WordPress filter applied and custom bullet content exists, use those.
+  if (Array.isArray(bullets[$sliderId])) {
+    $bulletRender = bullets[$sliderId];
   }
 
   // Start preparing slider carousel options.
@@ -199,49 +206,51 @@ const prepareData = (block, container, containerClass) => {
     sliderOptions.breakpoints = $breakpoints;
   }
 
-  if ($arrow.enabled) {
-    let $arrowIdNext = `${containerClass}--next`,
-      $arrowIdPrev = `${containerClass}--prev`;
-
-    createArrows(container, $arrowIdPrev, $arrowIdNext);
-
-    sliderOptions.navigation = {
-      nextEl: `#${$arrowIdNext}`,
-      prevEl: `#${$arrowIdPrev}`
-    };
-  }
-
-  addBreakpointClasses(container, $breakpoints);
-
   let $wrapperTag = $wrapperEl.tagName.toLowerCase(),
     $wrapperClassList = toArray($wrapperClass, ' '),
     $slideCount = $wrapperEl.children.length,
-    $slideNumber = 0;
+    $slideNumber = 0,
+    $noWrapperClassMsg = `${$msgPrefix}slider wrapper element "<${$wrapperTag}>" for which "${$wrapperClass}" class(es) is set for removal doesn't exist.`;
 
   try {
-    // Case where slider wrapper class to remove doesn't exist.
-    if (isValidString($wrapperClass) && !hasClass($wrapperEl.classList, $wrapperClass)) {
-      throw `${$msgPrefix}slider wrapper element "<${$wrapperTag}>" for which "${$wrapperClass}" class(es) is set for removal doesn't exist.`;
-    }
-
-    // Add the slider wrapper class.
-    $wrapperEl.classList.add('swiper-wrapper', 'tws-sliderCarousel__wrapper');
-
     // Case where slider has less than 2 slides.
     if ($slideCount < 2) {
       throw `${$msgPrefix}there must be atleast 2 slide elements inside the wrapper element to initialize the slider.`;
     }
 
+    if ($arrow.enabled) {
+      let $arrowIdPrev = `slider__${$sliderId}--prev`,
+        $arrowIdNext = `slider__${$sliderId}--next`;
+
+      createArrows(container, $arrowIdPrev, $arrowIdNext);
+
+      sliderOptions.navigation = {
+        prevEl: `#${$arrowIdPrev}`,
+        nextEl: `#${$arrowIdNext}`
+      };
+    }
+
+    addBreakpointClasses(container, $breakpoints);
+
+    // Case where default slider wrapper class is to be removed.
+    if (hasContent($wrapperClassList, $noWrapperClassMsg, false, $wrapperEl.classList)) {
+      $wrapperEl.classList.remove(...$wrapperClassList);
+    }
+
+    // Add the slider wrapper class.
+    $wrapperEl.classList.add('swiper-wrapper', 'tws-sliderCarousel__wrapper');
+
     if ($bullet.enabled) {
-      let $bulletId = `${containerClass}--bullets`,
-        $invalidBulletMsg = `${$msgPrefix}bullets can't be rendered from the given value. There are total "${$slideCount}" slides but given value is "${$bullet.render}".`;
+      let $bulletId = `slider__${$sliderId}--bullets`,
+        $hasCustomBullet = $bulletRender.length > 0,
+        $invalidBulletMsg = `${$msgPrefix}bullets can't be rendered from the given value. There must be exactly "${$slideCount}" non-empty string values separated by comma, one for each slide.`;
 
       // Case where bullet rendering was given but not equal to number of slides.
-      if ($bulletRender.length > 0 && $bulletRender.length !== $slideCount) {
+      if ($hasCustomBullet && $bulletRender.length !== $slideCount) {
         throw $invalidBulletMsg;
       }
 
-      createBullets(container, $bulletId);
+      createBullets(container, $bulletId, $hasCustomBullet);
 
       sliderOptions.pagination = {
         el: `#${$bulletId}`,
@@ -252,16 +261,16 @@ const prepareData = (block, container, containerClass) => {
         })
       };
     }
+
+    // Add slider ID to the slider container to make it a unique swiper instance.
+    container.setAttribute('id', `slider__${$sliderId}`);
   } catch (error) {
     throw new Error(error);
-  } finally {
-    // Remove default class, if given and exists in current wrapper element.
-    if (hasClass($wrapperEl.classList, $wrapperClass) && Array.isArray($wrapperClassList)) {
-      $wrapperEl.classList.remove(...$wrapperClassList);
-    }
   }
 
-  let $wrapperChildNodes = $wrapperEl.childNodes;
+  let $wrapperChildNodes = $wrapperEl.childNodes,
+    $slideClassList = toArray($slideClass, ' '),
+    $getSlide = toArray($slide, '.'); // eg: "div.wp-block-column" => ['div', 'wp-block-column].
 
   // Iterate over all child nodes of the slider wrapper to get the slides.
   for (let slide = 0; slide < $wrapperChildNodes.length; slide++) {
@@ -275,38 +284,36 @@ const prepareData = (block, container, containerClass) => {
     }
 
     let $nodeTag = $slideNode.tagName.toLowerCase(),
-      $slideClassList = toArray($slideClass, ' '),
-      $getSlide = toArray($slide, '.'); // eg: "div.wp-block-column" => ['div', 'wp-block-column].
+      $noSlideClassMsg = `${$msgPrefix}slide element "<${$nodeTag}>" for which "${$slideClass}" class(es) is set for removal doesn't exist.`;
 
     try {
       // Case where slide element tag does not match.
       if ($getSlide[0] !== $nodeTag) {
-        throw new Error(`${$msgPrefix}the slide elements do not match. Element set on slider option is "<${$getSlide[0]}>" but "<${$nodeTag}>" found.`);
+        throw `${$msgPrefix}the slide elements do not match. Element set on slider option is "<${$getSlide[0]}>" but "<${$nodeTag}>" found.`;
       }
 
       // An info message if slide is empty.
-      if ($slideNode.innerHTML === '') {
+      if (!isValidString($slideNode.innerHTML)) {
         console.info(`${$msgPrefix}slide number "${$slideNumber}" has no content. Is that on purpose?`);
       }
 
-      // Case where slide class to remove doesn't exist.
-      if (isValidString($slideClass) && !hasClass($slideNode.classList, $slideClass)) {
-        throw new Error(`${$msgPrefix}slide element "<${$nodeTag}>" for which "${$slideClass}" class(es) is set for removal doesn't exist.`);
+      // Case where default slide class is to be removed.
+      if (hasContent($slideClassList, $noSlideClassMsg, false, $slideNode.classList)) {
+        $slideNode.classList.remove(...$slideClassList);
       }
 
       // Add the slide class.
       $slideNode.classList.add('swiper-slide');
     } catch (error) {
       throw new Error(error);
-    } finally {
-      // Remove default class, if given and exists in current slide element.
-      if (hasClass($slideNode.classList, $slideClass) && Array.isArray($slideClassList)) {
-        $slideNode.classList.remove(...$slideClassList);
-      }
     }
   }
 
-  createSlider(`.${containerClass}`, sliderOptions);
+  try {
+    createSlider(`.${containerClass}`, sliderOptions);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 /**
@@ -331,31 +338,31 @@ if (Array.isArray(containers)) {
         let $blockClass = `tws-sliderCarousel--container__${$blockIndex}--instance__${$innerIndex}`,
           $innerClass = `tws-sliderCarousel__${$blockIndex}--instance__${$innerIndex}`;
 
-        // The block element must have only one inner element.
-        // This inner element will be the main container for slider carousel.
-        if ($blockElement[block].children.length !== 1) {
-          console.error(
-            `The block element with classname "${$blockClass}" does not have any inner HTML element to instantiate the slider. Use the block that creates an inner container like WordPress default "group" block.`
-          );
-
-          continue;
-        }
-
         // Get the inner element of the block element to apply class to.
         let $innerElement = $blockElement[block].children[0];
 
-        if (!$innerElement.classList.contains($blockChildClass)) {
-          console.error(
-            `The block element with classname "${container.parent}" does not have inner container element with classname as "${$blockChildClass}". Slider can't be initialized. These are passed inside function "tws_bfsc_get_elements()". If filter is used to modify it, make sure the returned element classes are valid.`
-          );
-
-          continue;
-        }
-
         try {
-          $blockElement[block].classList.add($blockClass);
-          $innerElement.classList.add($innerClass);
-          prepareData($blockElement[block], $innerElement, $innerClass);
+          // Case where block element doesn't have only one inner element.
+          // This inner element will be the main container for slider carousel.
+          if ($blockElement[block].children.length !== 1) {
+            throw new Error(
+              `The block element with classname "${$blockClass}" must have exactly one inner HTML element to instantiate the slider. Use the block that creates an inner container like WordPress default "group" block. Total of "${$blockElement[block].children.length}" inner element(s) found.`
+            );
+          }
+
+          // Case where inner element classname doesn't match with given block's child classname.
+          if (
+            hasContent(
+              toArray($blockChildClass, ' '),
+              `The block element with classname "${container.parent}" does not have inner container element with classname "${$blockChildClass}". Slider can't be initialized. These are passed inside function "tws_bfsc_get_elements()". If filter is used to modify it, make sure the returned element classes are valid.`,
+              true,
+              $innerElement.classList
+            )
+          ) {
+            $blockElement[block].classList.add($blockClass);
+            $innerElement.classList.add($innerClass);
+            prepareData($blockElement[block], $innerElement, $innerClass);
+          }
         } catch (error) {
           if (error instanceof TypeError) {
             console.error(

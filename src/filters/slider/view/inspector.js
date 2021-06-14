@@ -22,7 +22,7 @@ import { __experimentalNumberControl as NumberControl } from '@wordpress/compone
 
 const { createHigherOrderComponent } = wp.compose;
 const { Fragment } = wp.element;
-const { InspectorControls } = wp.blockEditor;
+const { InspectorControls, InspectorAdvancedControls } = wp.blockEditor;
 const { PanelBody, Panel, ToggleControl, TextControl, SelectControl, BaseControl, Button, ButtonGroup } = wp.components;
 const { __ } = wp.i18n;
 
@@ -39,6 +39,7 @@ export default createHigherOrderComponent(BlockEdit => {
 
     const {
       sliderEnabled,
+      sliderId,
       defaultEnabled,
       defaultSlideNumber,
       defaultSpace,
@@ -81,6 +82,11 @@ export default createHigherOrderComponent(BlockEdit => {
       breakFourEnabled
     } = props.attributes;
 
+    // Set unique ID for each slider from the block (props) clientId.
+    if (!sliderId) {
+      props.setAttributes({ sliderId: props.clientId });
+    }
+
     /**
      * On the frontend, when parsing post's blocks, the attributes set here will be
      * displayed as values under key "attrs". However, it may only show the
@@ -109,21 +115,29 @@ export default createHigherOrderComponent(BlockEdit => {
           <ToggleControl
             className="tws-slider-carousel__enable tws-blockfilter__toggle"
             label={__('Enable Slider Carousel', 'tws-blockfilter')}
-            help={sliderEnabled
-              ? __('This block will be converted to a slider. It can only be previewed on frontend', 'tws-blockfilter')
-              : __('This block is not a slider', 'tws-blockfilter')}
+            help={sliderEnabled ? __('This block will be converted to a slider. It can only be previewed on frontend', 'tws-blockfilter') : __('This block is not a slider', 'tws-blockfilter')}
             checked={sliderEnabled}
             onChange={() => props.setAttributes({ sliderEnabled: !sliderEnabled })}
           />
           {sliderEnabled && (
-            // Main toggle controls.
             <>
+              {/* Showing slider ID on Advanced Panel. */}
+              <InspectorAdvancedControls>
+                <div>
+                  Slider Container Unique ID:
+                  <p>
+                    <code>
+                      <em>
+                        <strong>{sliderId}</strong>
+                      </em>
+                    </code>
+                  </p>
+                </div>
+              </InspectorAdvancedControls>
               <ToggleControl
                 className="tws-slider-carousel__enable-slider tws-blockfilter__toggle"
                 label={__('Enable interactions', 'tws-blockfilter')}
-                help={defaultEnabled
-                  ? __('Will respond to all events/interactions', 'tws-blockfilter')
-                  : __("Won't respond to any event/interaction", 'tws-blockfilter')}
+                help={defaultEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", 'tws-blockfilter')}
                 checked={defaultEnabled}
                 onChange={() => props.setAttributes({ defaultEnabled: !defaultEnabled })}
               />
@@ -290,18 +304,14 @@ export default createHigherOrderComponent(BlockEdit => {
                   <ToggleControl
                     className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
                     label={__('Make bullets clickable', 'tws-blockfilter')}
-                    help={bulletClickable
-                      ? __('Clicking bullet will change slide', 'tws-blockfilter')
-                      : __("Clicking bullet won't change slide", 'tws-blockfilter')}
+                    help={bulletClickable ? __('Clicking bullet will change slide', 'tws-blockfilter') : __("Clicking bullet won't change slide", 'tws-blockfilter')}
                     checked={bulletClickable}
                     onChange={() => props.setAttributes({ bulletClickable: !bulletClickable })}
                   />
                   <ToggleControl
                     className="tws-slider-carousel__bulletOptions tws-blockfilter__toggle-inner"
                     label={__('Make bullets dynamic', 'tws-blockfilter')}
-                    help={bulletDynamic
-                      ? __('Keep only few bullets visible', 'tws-blockfilter')
-                      : __('Keep all bullets visible', 'tws-blockfilter')}
+                    help={bulletDynamic ? __('Keep only few bullets visible', 'tws-blockfilter') : __('Keep all bullets visible', 'tws-blockfilter')}
                     checked={bulletDynamic}
                     onChange={() => props.setAttributes({ bulletDynamic: !bulletDynamic })}
                   />
@@ -362,9 +372,7 @@ export default createHigherOrderComponent(BlockEdit => {
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
                         label={__('Enable interactions', 'tws-blockfilter')}
-                        help={breakOneEnabled
-                          ? __('Will respond to all events/interactions', 'tws-blockfilter')
-                          : __("Won't respond to any event/interaction", 'tws-blockfilter')}
+                        help={breakOneEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", 'tws-blockfilter')}
                         checked={breakOneEnabled}
                         onChange={() =>
                           props.setAttributes({
@@ -421,9 +429,7 @@ export default createHigherOrderComponent(BlockEdit => {
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
                         label={__('Enable interactions', 'tws-blockfilter')}
-                        help={breakTwoEnabled
-                          ? __('Will respond to all events/interactions', 'tws-blockfilter')
-                          : __("Won't respond to any event/interaction", 'tws-blockfilter')}
+                        help={breakTwoEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", 'tws-blockfilter')}
                         checked={breakTwoEnabled}
                         onChange={() =>
                           props.setAttributes({
@@ -479,9 +485,7 @@ export default createHigherOrderComponent(BlockEdit => {
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
                         label={__('Enable interactions', 'tws-blockfilter')}
-                        help={breakThreeEnabled
-                          ? __('Will respond to all events/interactions', 'tws-blockfilter')
-                          : __("Won't respond to any event/interaction", 'tws-blockfilter')}
+                        help={breakThreeEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", 'tws-blockfilter')}
                         checked={breakThreeEnabled}
                         onChange={() =>
                           props.setAttributes({
@@ -538,9 +542,7 @@ export default createHigherOrderComponent(BlockEdit => {
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
                         label={__('Enable interactions', 'tws-blockfilter')}
-                        help={breakFourEnabled
-                          ? __('Will respond to all events/interactions', 'tws-blockfilter')
-                          : __("Won't respond to any event/interaction", 'tws-blockfilter')}
+                        help={breakFourEnabled ? __('Will respond to all events/interactions', 'tws-blockfilter') : __("Won't respond to any event/interaction", 'tws-blockfilter')}
                         checked={breakFourEnabled}
                         onChange={() =>
                           props.setAttributes({
