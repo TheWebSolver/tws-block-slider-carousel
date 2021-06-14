@@ -127,7 +127,7 @@ function tws_bfsc_init() {
 	wp_register_script(
 		'tws-slider-carousel-script',
 		plugins_url( 'build/slider.js', __FILE__ ),
-		array( 'jquery', 'tws-slick-script' ),
+		array( 'tws-slick-script' ),
 		'1.0.0',
 		true
 	);
@@ -146,12 +146,21 @@ function tws_bfsc_init() {
 		)
 	);
 
+	/**
+	 * WPHOOK: Filter -> slider bullet render callback content.
+	 *
+	 * @param string[] $bullets The bullets' content.
+	 * @var   string[]
+	 */
+	$bullets = apply_filters( 'hzfex_slider_carousel_bullet_content', array() );
+
 	wp_localize_script(
 		'tws-slider-carousel-script',
 		'twsSliderCarousel',
 		array(
 			'containers' => tws_bfsc_get_elements(),
 			'arrows'     => $arrows,
+			'bullets'    => $bullets,
 		)
 	);
 
