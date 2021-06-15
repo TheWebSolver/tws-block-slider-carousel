@@ -31,9 +31,9 @@ const createSlider = (instance, options) => {
 /**
  * Creates navigation bullets for the slider.
  *
- * @param {Element}  container  The slider container element.
- * @param {string}   bulletId   The bullet ID.
- * @param {boolean}  hasRender  Whether bullet has custom content to render.
+ * @param   {Element} container The slider container element.
+ * @param   {string}  bulletId  The bullet ID.
+ * @param   {boolean} hasRender Whether bullet has custom content to render.
  * @returns {object}            The bullets node object.
  */
 const createBullets = (container, bulletId, hasRender) => {
@@ -54,11 +54,11 @@ const createBullets = (container, bulletId, hasRender) => {
 /**
  * Sets contents to display instead of just bullets.
  *
- * @param {string[]} options   Bullets render options.
- * @param {number}   count     Total number of slides.
- * @param {number}   index     The current bullet position.
- * @param {string}   className The current bullet class name.
- * @returns {string}           HTML output with `span` tag for rendering bullet.
+ * @param   {string[]} options   Bullets render options.
+ * @param   {number}   count     Total number of slides.
+ * @param   {number}   index     The current bullet position.
+ * @param   {string}   className The current bullet class name.
+ * @returns {string}             HTML output with `span` tag for rendering bullet.
  */
 const setBullets = (options, count, index, className) => {
   let $bulletContent = options.length === count ? options[index] : '',
@@ -69,10 +69,11 @@ const setBullets = (options, count, index, className) => {
 
 /**
  * Creates navigation arrows for the slider.
- * @param {Element}  container The slider container element.
- * @param {string}   prev      The button ID for previous slide.
- * @param {string}   next      The button ID for next slide.
- * @returns {object}           The appended prev/next arrow DOM objects.
+ *
+ * @param   {Element} container The slider container element.
+ * @param   {string}  prev      The button ID for previous slide.
+ * @param   {string}  next      The button ID for next slide.
+ * @returns {object}            The appended prev/next arrow DOM objects.
  */
 const createArrows = (container, prev, next) => {
   let $prevBtn = document.createElement('span'),
@@ -127,11 +128,12 @@ const hasContent = (list, error = '', strict = false, values = []) => {
     return values instanceof Array ? $values.includes(value) : $values.contains(value);
   });
 
-  // Error message given and list is not valid, throw error message.
-  if (isValidString(error) && !$isValidContent) throw error;
-
-  // Strict check enabled, error message given and list has no content, throw error message.
-  if (strict && isValidString(error) && list.length === 0) throw error;
+  // All values not found or strict enabled & list has no content, throw error message.
+  if (isValidString(error)) {
+    if (!$isValidContent || (strict && list.length === 0)) {
+      throw error;
+    }
+  }
 
   return $isValidContent;
 };
@@ -167,10 +169,10 @@ const addBreakpointClasses = (container, breakpoints) => {
 /**
  * Prepare slider options from data attribute of the block.
  *
- * @param {Element} block          The block where slider is applied.
- * @param {Element} container      The block inner container class which will
- *                                 actually be the slider container.
- * @param {string}  containerClass The unique classname for the container.
+ * @param  {Element} block          The block where slider is applied.
+ * @param  {Element} container      The block inner container class which will
+ *                                  actually be the slider container.
+ * @param  {string}  containerClass The unique classname for the container.
  * @throws {Error}
  */
 const prepareData = (block, container, containerClass) => {

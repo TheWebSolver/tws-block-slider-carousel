@@ -157,7 +157,7 @@ export default createHigherOrderComponent(BlockEdit => {
                 label={__('Show bullet pagination', 'tws-blockfilter')}
                 help={
                   enableBullets
-                    ? __('Enable slider carousel bullet navigation controls. Set each breakpoint details in PanelBody "Bullet Options"', 'tws-blockfilter')
+                    ? __('Enable slider carousel bullet navigation controls. Set details in PanelBody "Bullet Options"', 'tws-blockfilter')
                     : __('Disable bullet navigation controls', 'tws-blockfilter')
                 }
                 checked={enableBullets}
@@ -168,7 +168,7 @@ export default createHigherOrderComponent(BlockEdit => {
                 label={__('Show arrow navigation', 'tws-blockfilter')}
                 help={
                   enableArrows
-                    ? __('Enable slider carousel arrow navigation controls. Set each breakpoint details in PanelBody "Arrow Options"', 'tws-blockfilter')
+                    ? __('Enable slider carousel arrow navigation controls. Set details in PanelBody "Arrow Options"', 'tws-blockfilter')
                     : __('Disable arrow navigation controls', 'tws-blockfilter')
                 }
                 checked={enableArrows}
@@ -179,7 +179,7 @@ export default createHigherOrderComponent(BlockEdit => {
                 label={__('Make slider responsive', 'tws-blockfilter')}
                 help={
                   enableBreakpoints
-                    ? __('Enable slider carousel breakpoint and makes slides responsive. Set each breakpoint details in PanelBody "Slider Breakpoints"', 'tws-blockfilter')
+                    ? __('Enable slider carousel breakpoint and make slides responsive. Set details in PanelBody "Slider Breakpoints"', 'tws-blockfilter')
                     : __('Disable slider breakpoint', 'tws-blockfilter')
                 }
                 checked={enableBreakpoints}
