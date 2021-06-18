@@ -1,19 +1,33 @@
-const defaultConfig = require('./node_modules/@wordpress/scripts/config/webpack.config');
 // Require path.
 const path = require('path');
 
 module.exports = {
-  ...defaultConfig,
   entry: {
-    index: './src/index.js',
-    slider: './src/slider.js'
+    index: {
+      import: path.resolve(__dirname, 'src/index.js')
+    },
+    slider: {
+      import: path.resolve(__dirname, 'src/slider.js'),
+      library: {
+        name: 'twsSlider',
+        type: 'umd',
+        umdNamedDefine: true
+      }
+    }
   },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'build')
   },
   module: {
-    ...defaultConfig.module,
-    rules: [...defaultConfig.module.rules]
-  }
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        type: 'javascript/auto',
+        use: 'babel-loader'
+      }
+    ]
+  },
+  devtool: false
 };

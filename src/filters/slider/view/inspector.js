@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 /**
  * Slider Carousel Filter
  *
@@ -15,10 +16,8 @@
  * ███║     ███║   ████████████████╗
  * ╚═╝      ╚═╝    ═══════════════╝
  */
-
-import { React } from 'React';
 import { eligibleBlocks, sliderEffects } from '../controller/props';
-import { __experimentalNumberControl as NumberControl } from '@wordpress/components';
+const { __experimentalNumberControl: NumberControl } = wp.components;
 
 const { createHigherOrderComponent } = wp.compose;
 const { Fragment } = wp.element;
