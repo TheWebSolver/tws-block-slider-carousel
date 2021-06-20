@@ -26,7 +26,7 @@ export const slideInfoHolder = [];
  * Gets the element in DOM.
  *
  * @param   {string} selector The DOM Element selector. Valid selectors are:
- *                            Element tagName, css id/class selectors (with `.`)
+ *                            Element tagName, valid id/class attribute.
  * @returns {Node}            Node list of Elements.
  */
 export const getNode = selector => {
@@ -37,7 +37,7 @@ export const getNode = selector => {
  * Gets list of elements in DOM.
  *
  * @param   {string}   selector The DOM Element selector. Valid selectors are:
- *                              Element tagName, css id/class selectors (with `.`)
+ *                              Element tagName, valid id/class attribute.
  * @returns {NodeList}          Node list of Elements.
  */
 export const getNodes = selector => {
@@ -47,10 +47,13 @@ export const getNodes = selector => {
 /**
  * Gets blocks that are converted to slider carousel.
  *
+ * @param {string} className Additional class to check.
+ *
  * @returns {NodeList} Blocks that are converted to slider carousel.
  */
-export const getSliders = () => {
-  return getNodes('.tws-block__sliderCarousel');
+export const getSliders = (className = '') => {
+  let $class = isValidString(className) ? `.tws-block__sliderCarousel.${className}` : '.tws-block__sliderCarousel';
+  return getNodes($class);
 };
 
 /**
@@ -110,20 +113,33 @@ export const toArray = (thing, separator) => {
 };
 
 /**
- * Sets new classname to currently clicked element.
+ * Sets `data-selected` attribute and new class to currently clicked element.
  *
- * @param {NodeList} selectors        DOM elements as selectors.
- * @param {number}   index            The currently clicked element index.
- * @param {string}   currentClassName The currently clicked element classname.
- *                                    Usually set to `current`.
+ * @param {NodeList} selectors DOM elements as selectors.
+ * @param {number}   index     The currently clicked element index.
+ * @param {object}   options   The currently clicked selector element options.
+ * - `className` - will be added to the clicked selector element.
+ * - `reset`     - If is set to true, clicking on selector multiple times toggles all slider blocks.
  */
-export const setCurrentElClassName = (selectors, index, currentClassName) => {
+export const setSelected = (selectors, index, options) => {
   for (let selector = 0; selector < selectors.length; selector++) {
+    let $selected = selectors[selector];
+
+    if (options.reset) $selected.classList.toggle(options.className);
+
     if (selector === index) {
-      selectors[selector].classList.add(currentClassName);
-      continue;
+      $selected.setAttribute('data-selected', 'yes');
+      if (!options.reset) $selected.classList.add(options.className);
+    } else {
+      $selected.setAttribute('data-selected', 'no');
+      if (!options.reset) {
+        $selected.classList.remove(options.className);
+      } else {
+        if ($selected.dataset.selected === 'no' && $selected.classList.contains(options.className)) {
+          $selected.classList.remove(options.className);
+        }
+      }
     }
-    selectors[selector].classList.remove(currentClassName);
   }
 };
 
@@ -133,10 +149,12 @@ export const setCurrentElClassName = (selectors, index, currentClassName) => {
  * @param   {string|DOMTokenList} selector The selector for the block converted to slider.
  *                                         - Either by selector as the slider block ID.
  *                                         - Or by selector that has id set in it's classlist.
+ * @param {string} blockClassName          Classname applied to blocks.
+ *                                         Select sliders with this class applied.
  * @returns {object|Node}                  Node element if found, empty object otherwise.
  */
-export const getSliderBlockWithId = selector => {
-  let $sliders = getSliders(),
+export const getSliderBlockWithId = (selector, blockClassName = '') => {
+  let $sliders = getSliders(blockClassName),
     $selected = {};
 
   for (let $slider = 0; $slider < $sliders.length; $slider++) {
@@ -244,32 +262,65 @@ export const setSlidesAdditionalInfo = (slider, getInfo) => {
 };
 
 /**
+ * Removes holder content.
+ *
+ * @param {Node} holder The holder element.
+ */
+export const removeHolderContent = holder => {
+  holder.innerHTML = '';
+  holder.classList.remove('hasContent');
+  holder.removeAttribute('data-slideindex');
+  holder.removeAttribute('data-sliderid');
+};
+
+/**
+ * Adds holder content.
+ *
+ * @param {Node}    holder  The holder element.
+ * @param {number}  index   The current index.
+ * @param {string} sliderId The id attribute of the current slider instance.
+ */
+export const addHolderContent = (holder, index, sliderId) => {
+  holder.innerHTML = slideInfoHolder[index].innerHTML;
+  holder.classList.add('hasContent', 'animate');
+  requestAnimationFrame(() => holder.classList.remove('animate'));
+  holder.setAttribute('data-slideindex', index);
+  holder.setAttribute('data-sliderid', sliderId);
+};
+
+/**
+ * Sets holder content by checking if it already has content or not.
+ *
+ * @param {Node}    holder     The holder element.
+ * @param {number}  index      The current index.
+ * @param {boolean} hasContent Whether holder has existing content or not.
+ * @param {string} sliderId    The id attribute of the current slider instance.
+ */
+export const toggleHolderContent = (holder, index, hasContent, sliderId) => {
+  if (!hasContent) {
+    removeHolderContent(holder);
+  } else {
+    addHolderContent(holder, index, sliderId);
+  }
+};
+
+/**
  * Gets the holder with clicked slide additional content.
  *
- * @param   {HTMLDivElement} holder The info holder element.
- * @param   {number}         index  The currently selected slide index.
- * @returns {HTMLDivElement}        The holder with slide additional content.
+ * @param   {HTMLDivElement} holder   The info holder element.
+ * @param   {number}         index    The current slide index.
+ * @param   {string}         sliderId The id attribute of the current slider instance.
+ * @returns {HTMLDivElement}          The holder with slide additional content.
  */
-export const getHolderWithInfo = (holder, index) => {
-  // Same slide clicked multiple times, toggle holder contents.
+export const getHolderWithInfo = (holder, index, sliderId) => {
   // eslint-disable-next-line eqeqeq
   if (index == holder.dataset.slideindex) {
-    if (holder.innerHTML === '') {
-      holder.innerHTML = slideInfoHolder[index].innerHTML;
-      holder.classList.add('hasContent', 'animate');
-      requestAnimationFrame(() => holder.classList.remove('animate'));
-    } else {
-      holder.innerHTML = '';
-      holder.classList.remove('hasContent');
-    }
+    // Same slide clicked multiple times, toggle holder contents.
+    toggleHolderContent(holder, index, holder.innerHTML === '', sliderId);
   } else {
     // Different slide clicked, set holder content from that slide.
-    holder.innerHTML = slideInfoHolder[index].innerHTML;
-    holder.classList.add('hasContent', 'animate');
-    requestAnimationFrame(() => holder.classList.remove('animate'));
+    toggleHolderContent(holder, index, true, sliderId);
   }
-
-  holder.setAttribute('data-slideindex', index);
 
   return holder;
 };
@@ -277,20 +328,25 @@ export const getHolderWithInfo = (holder, index) => {
 /**
  * Shows the additional content when a slide is clicked.
  *
- * @param {string}   currentSlideClassName The clicked slide new classname to add.
- * @param {string}   holderClassName       The holder classname.
- * @param {Function} holderInfoCallback    The slider holder content callback to get the content.
- *                                         The `slide` param is passed.
+ * @param {string} classNames (optional) Classnames applied to various elements.
+ * - `slide`  - The clicked slide class. Defaults to `current`.
+ * - `holder` - The slider additional content holder classname. Defaults to `slideDetails`.
+ * - `block`  - The slider block than contains given classname in classlist. Defaults to an empty string.
+ * @param {Function} holderInfoCallback The slider holder content callback to get the content.
+ *                                      The `slide` param is passed.
  */
-export const showSlideContent = (currentSlideClassName, holderClassName, holderInfoCallback) => {
-  let $sliders = getSliders();
+export const showSlideContent = (classNames, holderInfoCallback) => {
+  let $slideClass = classNames.slide !== undefined ? classNames.slide : 'current',
+    $holderClass = classNames.holder !== undefined ? classNames.holder : 'slideDetails',
+    $blockClass = classNames.block !== undefined ? classNames.block : '',
+    $sliders = getSliders($blockClass);
 
   for (let slider = 0; slider < $sliders.length; slider++) {
     try {
       let $current = $sliders[slider],
         $container = $current.children[0],
         $slider = getSliderInstance($container.id),
-        $holder = createInfoHolder(holderClassName);
+        $holder = createInfoHolder($holderClass);
 
       setSlidesAdditionalInfo($slider, holderInfoCallback);
 
@@ -303,14 +359,14 @@ export const showSlideContent = (currentSlideClassName, holderClassName, holderI
           return;
         }
 
-        setCurrentSlideClassName(instance, $slide, currentSlideClassName);
+        setCurrentSlideClassName(instance, $slide, $slideClass);
 
-        let $content = getHolderWithInfo($holder, $index);
+        let $content = getHolderWithInfo($holder, $index, $container.id);
 
         $container.append($content);
 
         if ($content.innerHTML === '') {
-          $slide.classList.remove(currentSlideClassName);
+          $slide.classList.remove($slideClass);
         }
       });
     } catch (error) {
@@ -322,62 +378,115 @@ export const showSlideContent = (currentSlideClassName, holderClassName, holderI
 /**
  * Resets any currently active slide details displayed.
  *
- * @param {string} currentSlideClassName The clicked slide class. Usually set to `current`.
- * @param {string} holderClass       The slide info holder class. Usually set to `slideDetails`.
+ * @param {object} classNames (optional) The classnames set for clicked slide and slider content holder.
+ * - `slide`  - The clicked slide class. Defaults to `current`.
+ * - `holder` - The slider additional content holder classname. Defaults to `slideDetails`.
  */
-export const resetSliderHolder = (currentSlideClassName, holderClass) => {
-  let $slide = getNode(`.swiper-slide.${currentSlideClassName}`),
-    $holder = getNode(holderClass);
+export const resetSliderHolder = classNames => {
+  let $slideClass = classNames.slide !== undefined ? classNames.slide : 'current',
+    $holderClass = classNames.holder !== undefined ? classNames.holder : 'slideDetails',
+    $slides = getNodes(`.swiper-slide.${$slideClass}`),
+    $holders = getNodes(`.${$holderClass}`);
 
   // Clear any currently clicked slide.
-  if ($slide instanceof Node) {
-    $slide.classList.remove(currentSlideClassName);
+  for (let slide = 0; slide < $slides.length; slide++) {
+    let $currentSlide = $slides[slide];
+
+    if ($currentSlide instanceof Node) {
+      $currentSlide.classList.remove($slideClass);
+    }
   }
 
   // Clear any contents on the slider holder.
-  if ($holder instanceof Node) {
-    $holder.innerHTML = '';
+  for (let holder = 0; holder < $holders.length; holder++) {
+    let $currentHolder = $holders[holder];
+    if ($currentHolder instanceof Node) {
+      $currentHolder.innerHTML = '';
+      $currentHolder.classList.remove('hasContent');
+      $currentHolder.removeAttribute('data-slideindex');
+      $currentHolder.removeAttribute('data-sliderid');
+    }
   }
 };
 
 /**
  * Shows/hides the slider block when respective selector is clicked.
  *
- * @param {string} selector                 The selector element.
- * @param {string} currentSlideClassName    The currently clicked slide new class to add.
- * @param {string} currentSelectorClassName The currently clicked selector element class to add.
- * @param {string} holderClass              The slider additional content holder class (with `.`).
- * @param {string} enabledClassName         The selectors' classname that can toggle sliders.
- * @param {string} disabledClassName        The selectors' classname than can't toggle sliders.
+ * Adds `data-selected` attribute with value as `yes` or `no` when selector element is clicked.
+ *
+ * @param {object} classNames The classnames for selector and selected block.
+ * - `selector`        - (required) The selector element classname.
+ * - `enabledSelector` - (optional) The selector element another classname which can trigger click.
+ *                       This can be a dynamically added class from another event.
+ *                       Defaults to `enabled` classname.
+ * - `clickedSelector` - (optional) New classname for the clicked (current) selector element.
+ *                       Defaults to `current` classname.
+ * - `selectedBlock`   - (optional) New classname for the selected slider block & it's clicked slide.
+ *                       Defaults to `current` classname.
+ * - `holder`          - (optional) The new classname for the info holder when a slide is clicked.
+ *                       Defaults to `slideDetails` classname.
+ * @param {object} reset (optional) Whether to reset the current selections (selector and slider block).
+ *                       Both defaults to `true` if not set.
+ * - `selector` - Whether to reset (toggle) selector on mulitple clicks.
+ * - `holder`   - Whether to reset (close) holder when selector is clicked while holder is open.
+ * @param {string} blockClassName (optional) Classname applied to the blocks which can toggled by selector.
+ *                                If not given, all slider blocks on page will be eligible for toggle.
  */
-export const toggleSlider = (selector, currentSlideClassName, currentSelectorClassName, holderClass, enabledClassName, disabledClassName) => {
-  let $selectors = getNodes(selector);
+export const toggleSlider = (classNames, reset, blockClassName = '') => {
+  let $selectorClass = classNames.selector,
+    $selectorEnabledClass = classNames.enabledSelector !== undefined ? classNames.enabledSelector : 'enabled',
+    $selectorClickedClass = classNames.clickedSelector !== undefined ? classNames.clickedSelector : 'current',
+    $selectedBlockClass = classNames.selectedBlock !== undefined ? classNames.selectedBlock : 'current',
+    $holderClass = classNames.holder !== undefined ? classNames.holder : 'slideDetails',
+    $resetSelector = reset.selector !== undefined ? reset.selector : true,
+    $resetHolder = reset.holder !== undefined ? reset.holder : true,
+    $selectors = getNodes(`.${$selectorClass}`),
+    $sliders = getSliders(blockClassName);
 
   for (let selector = 0; selector < $selectors.length; selector++) {
-    let $current = $selectors[selector];
+    let $currentEl = $selectors[selector];
 
-    $current.onclick = event => {
-      event.preventDefault();
-
+    $currentEl.onclick = event => {
       let $classList = event.currentTarget.classList,
-        $target = getSliderBlockWithId($classList),
-        $sliders = getSliders();
+        $target = getSliderBlockWithId($classList, blockClassName);
 
-      setCurrentElClassName($selectors, selector, currentSelectorClassName);
-      resetSliderHolder(currentSlideClassName, holderClass);
+      setSelected($selectors, selector, { className: $selectorClickedClass, reset: $resetSelector });
 
-      // Bail if no slider found.
-      if (!$classList.contains(enabledClassName) || !($target instanceof Node)) {
-        return;
+      if ($resetHolder) {
+        resetSliderHolder({ slide: $selectedBlockClass, holder: $holderClass });
+      }
+
+      // Will set given class (eg. 'current') to the matched slider block.
+      if ($target instanceof Node) {
+        $target.classList.toggle($selectedBlockClass);
       }
 
       for (let slider = 0; slider < $sliders.length; slider++) {
         let $slide = $sliders[slider];
+
+        // Case when target block is the selected slider block.
         if ($slide.id === $target.id) {
-          $slide.classList.toggle(currentSlideClassName);
-          $slide.classList.remove(disabledClassName);
+          // Check if selector is enabled to trigger the selection.
+          if ($classList.contains($selectorEnabledClass) && $target instanceof Node) {
+            $target.setAttribute('data-selected', 'yes');
+          }
         } else {
-          $slide.classList.toggle(disabledClassName);
+          // Case when target block is not the selected slider block.
+          // Check if selector is enabled to trigger the selection.
+          if ($classList.contains($selectorEnabledClass) && $target instanceof Node) {
+            $slide.setAttribute('data-selected', 'no');
+
+            // Toggle selected data attribute value when reset to be done.
+            if ($resetSelector && !$target.classList.contains($selectedBlockClass)) {
+              $slide.setAttribute('data-selected', 'yes');
+            }
+          }
+
+          // Check if unselected slider block has given class (eg. 'current') set.
+          // If it is, then remove that class.
+          if ($slide.classList.contains($selectedBlockClass)) {
+            $slide.classList.remove($selectedBlockClass);
+          }
         }
       }
     };
