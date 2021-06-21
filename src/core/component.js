@@ -401,10 +401,7 @@ export const resetSliderHolder = classNames => {
   for (let holder = 0; holder < $holders.length; holder++) {
     let $currentHolder = $holders[holder];
     if ($currentHolder instanceof Node) {
-      $currentHolder.innerHTML = '';
-      $currentHolder.classList.remove('hasContent');
-      $currentHolder.removeAttribute('data-slideindex');
-      $currentHolder.removeAttribute('data-sliderid');
+      removeHolderContent($currentHolder);
     }
   }
 };
@@ -474,12 +471,9 @@ export const toggleSlider = (classNames, reset, blockClassName = '') => {
           // Case when target block is not the selected slider block.
           // Check if selector is enabled to trigger the selection.
           if ($classList.contains($selectorEnabledClass) && $target instanceof Node) {
-            $slide.setAttribute('data-selected', 'no');
-
-            // Toggle selected data attribute value when reset to be done.
-            if ($resetSelector && !$target.classList.contains($selectedBlockClass)) {
-              $slide.setAttribute('data-selected', 'yes');
-            }
+            // Set selected value by by reset & currently clicked status of the current slide.
+            let $sel = $resetSelector && !$target.classList.contains($selectedBlockClass) ? 'yes' : 'no';
+            $slide.setAttribute('data-selected', $sel);
           }
 
           // Check if unselected slider block has given class (eg. 'current') set.
