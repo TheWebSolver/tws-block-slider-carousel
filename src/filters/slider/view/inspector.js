@@ -17,12 +17,11 @@
  * ╚═╝      ╚═╝    ═══════════════╝
  */
 import { eligibleBlocks, sliderEffects } from '../controller/props';
-const { __experimentalNumberControl: NumberControl } = wp.components;
 
 const { createHigherOrderComponent } = wp.compose;
 const { Fragment } = wp.element;
 const { InspectorControls, InspectorAdvancedControls } = wp.blockEditor;
-const { PanelBody, Panel, ToggleControl, TextControl, SelectControl, BaseControl, Button, ButtonGroup } = wp.components;
+const { PanelBody, Panel, ToggleControl, TextControl, SelectControl, BaseControl, Button, ButtonGroup, RangeControl } = wp.components;
 const { __ } = wp.i18n;
 
 /**
@@ -185,25 +184,29 @@ export default createHigherOrderComponent(BlockEdit => {
                 onChange={() => props.setAttributes({ enableBreakpoints: !enableBreakpoints })}
               />
               <PanelBody title={__('Slider Default Options', 'tws-blockfilter')} initialOpen={false} className="tws-slider-carousel__panelBody">
-                <NumberControl
+                <RangeControl
                   label={__('Number of slides to show', 'tws-blockfilter')}
-                  className="components-base-control"
-                  dragDirection="e"
-                  dragThreshold={1}
-                  labelPosition="top"
-                  step={1}
                   value={defaultSlideNumber}
                   onChange={value => props.setAttributes({ defaultSlideNumber: value })}
+                  min={1}
+                  max={8}
+                  step={0.1}
+                  railColor="#ccc"
+                  withInputField={true}
+                  beforeIcon="slides"
+                  renderTooltipContent={value => `${value} ${value < 2 ? 'slide' : 'slides'}`}
                 />
-                <NumberControl
+                <RangeControl
                   label={__('Gap (margins) between slides', 'tws-blockfilter')}
-                  className="components-base-control"
-                  dragDirection="e"
-                  dragThreshold={1}
-                  labelPosition="top"
-                  step={1}
                   value={defaultSpace}
                   onChange={value => props.setAttributes({ defaultSpace: value })}
+                  min={2}
+                  max={32}
+                  step={2}
+                  railColor="#ccc"
+                  withInputField={true}
+                  beforeIcon="columns"
+                  renderTooltipContent={value => `${value} px`}
                 />
                 <SelectControl
                   label={__('Slide Effect', 'tws-blockfilter')}
@@ -339,34 +342,41 @@ export default createHigherOrderComponent(BlockEdit => {
                   />
                   {enableOneBreakpoint && (
                     <Panel className="tws-slider-carousel__panel">
-                      <NumberControl
-                        label={__('Enter window width (in px)', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={10}
-                        labelPosition="top"
-                        isShiftStepEnabled={true}
-                        step={5}
-                        shiftStep={50}
+                      <RangeControl
+                        label={__('Minimum small window width', 'tws-blockfilter')}
                         value={breakOnePixels}
                         onChange={value => props.setAttributes({ breakOnePixels: value })}
+                        min={300}
+                        max={599}
+                        step={5}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="laptop"
+                        renderTooltipContent={value => `${value} px`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Number of slides to show', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={1}
-                        labelPosition="top"
-                        step={1}
                         value={breakOneSlides}
                         onChange={value => props.setAttributes({ breakOneSlides: value })}
+                        min={1}
+                        max={8}
+                        step={0.1}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="slides"
+                        renderTooltipContent={value => `${value} ${value < 2 ? 'slide' : 'slides'}`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Gap (margins) between slides', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={1}
-                        labelPosition="top"
-                        step={1}
                         value={breakOneSpace}
                         onChange={value => props.setAttributes({ breakOneSpace: value })}
+                        min={2}
+                        max={32}
+                        step={2}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="columns"
+                        renderTooltipContent={value => `${value} px`}
                       />
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
@@ -396,34 +406,41 @@ export default createHigherOrderComponent(BlockEdit => {
                   />
                   {enableTwoBreakpoint && (
                     <Panel className="tws-slider-carousel__panel">
-                      <NumberControl
-                        label={__('Enter window width (in px)', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={10}
-                        labelPosition="top"
-                        isShiftStepEnabled={true}
-                        step={5}
-                        shiftStep={50}
+                      <RangeControl
+                        label={__('Minimum medium window width', 'tws-blockfilter')}
                         value={breakTwoPixels}
                         onChange={value => props.setAttributes({ breakTwoPixels: value })}
+                        min={300}
+                        max={899}
+                        step={5}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="laptop"
+                        renderTooltipContent={value => `${value} px`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Number of slides to show', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={1}
-                        labelPosition="top"
-                        step={1}
                         value={breakTwoSlides}
                         onChange={value => props.setAttributes({ breakTwoSlides: value })}
+                        min={1}
+                        max={8}
+                        step={0.1}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="slides"
+                        renderTooltipContent={value => `${value} ${value < 2 ? 'slide' : 'slides'}`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Gap (margins) between slides', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={8}
-                        labelPosition="top"
-                        step={2}
                         value={breakTwoSpace}
                         onChange={value => props.setAttributes({ breakTwoSpace: value })}
+                        min={2}
+                        max={32}
+                        step={2}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="columns"
+                        renderTooltipContent={value => `${value} px`}
                       />
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
@@ -452,34 +469,41 @@ export default createHigherOrderComponent(BlockEdit => {
                   />
                   {enableThreeBreakpoint && (
                     <Panel className="tws-slider-carousel__panel">
-                      <NumberControl
-                        label={__('Enter window width (in px)', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={10}
-                        labelPosition="top"
-                        isShiftStepEnabled={true}
-                        step={5}
-                        shiftStep={50}
+                      <RangeControl
+                        label={__('Minimum large window width', 'tws-blockfilter')}
                         value={breakThreePixels}
                         onChange={value => props.setAttributes({ breakThreePixels: value })}
+                        min={600}
+                        max={1199}
+                        step={5}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="laptop"
+                        renderTooltipContent={value => `${value} px`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Number of slides to show', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={1}
-                        labelPosition="top"
-                        step={1}
                         value={breakThreeSlides}
                         onChange={value => props.setAttributes({ breakThreeSlides: value })}
+                        min={1}
+                        max={8}
+                        step={0.1}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="slides"
+                        renderTooltipContent={value => `${value} ${value < 2 ? 'slide' : 'slides'}`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Gap (margins) between slides', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={3}
-                        labelPosition="top"
-                        step={1}
                         value={breakThreeSpace}
                         onChange={value => props.setAttributes({ breakThreeSpace: value })}
+                        min={2}
+                        max={32}
+                        step={2}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="columns"
+                        renderTooltipContent={value => `${value} px`}
                       />
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
@@ -509,34 +533,41 @@ export default createHigherOrderComponent(BlockEdit => {
                   />
                   {enableFourBreakpoint && (
                     <Panel className="tws-slider-carousel__panel">
-                      <NumberControl
-                        label={__('Enter window width (in px)', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={10}
-                        labelPosition="top"
-                        isShiftStepEnabled={true}
-                        step={5}
-                        shiftStep={50}
+                      <RangeControl
+                        label={__('Minimum largest window width', 'tws-blockfilter')}
                         value={breakFourPixels}
                         onChange={value => props.setAttributes({ breakFourPixels: value })}
+                        min={900}
+                        max={1499}
+                        step={5}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="laptop"
+                        renderTooltipContent={value => `${value} px`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Number of slides to show', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={1}
-                        labelPosition="top"
-                        step={1}
                         value={breakFourSlides}
                         onChange={value => props.setAttributes({ breakFourSlides: value })}
+                        min={1}
+                        max={8}
+                        step={0.1}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="slides"
+                        renderTooltipContent={value => `${value} ${value < 2 ? 'slide' : 'slides'}`}
                       />
-                      <NumberControl
+                      <RangeControl
                         label={__('Gap (margins) between slides', 'tws-blockfilter')}
-                        dragDirection="e"
-                        dragThreshold={8}
-                        labelPosition="top"
-                        step={2}
                         value={breakFourSpace}
                         onChange={value => props.setAttributes({ breakFourSpace: value })}
+                        min={2}
+                        max={32}
+                        step={2}
+                        railColor="#ccc"
+                        withInputField={true}
+                        beforeIcon="columns"
+                        renderTooltipContent={value => `${value} px`}
                       />
                       <ToggleControl
                         className="tws-slider-carousel__enable-slider tws-blockfilter__toggle-inner-2"
