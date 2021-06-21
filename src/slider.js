@@ -33,7 +33,7 @@ import {
   addHolderContent,
   toggleHolderContent,
   getHolderWithInfo,
-  showSlideContent,
+  init,
   resetSliderHolder,
   toggleSlider
 } from './core/component';
@@ -60,7 +60,7 @@ export {
   addHolderContent,
   toggleHolderContent,
   getHolderWithInfo,
-  showSlideContent,
+  init,
   resetSliderHolder,
   toggleSlider,
   createBullets,

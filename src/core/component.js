@@ -154,28 +154,9 @@ export const setSelected = (selectors, index, options) => {
  * @returns {object|Node}                  Node element if found, empty object otherwise.
  */
 export const getSliderBlockWithId = (selector, blockClassName = '') => {
-  let $sliders = getSliders(blockClassName),
-    $selected = {};
-
-  for (let $slider = 0; $slider < $sliders.length; $slider++) {
-    let $current = $sliders[$slider];
-
-    if (selector instanceof DOMTokenList) {
-      if (selector.contains($current.id)) {
-        $selected = $current;
-
-        break;
-      }
-    } else if (isValidString(selector)) {
-      if (selector === $current.id) {
-        $selected = $current;
-
-        break;
-      }
-    }
-  }
-
-  return $selected;
+  return Array.from(getSliders(blockClassName)).filter(slider => {
+    return isValidString(selector) ? selector === slider.id : selector.contains(slider.id);
+  })[0];
 };
 
 /**
@@ -326,16 +307,18 @@ export const getHolderWithInfo = (holder, index, sliderId) => {
 };
 
 /**
- * Shows the additional content when a slide is clicked.
+ * Initializes sliders.
  *
- * @param {string} classNames (optional) Classnames applied to various elements.
+ * @param {object} classNames (optional) Classnames applied to various elements.
  * - `slide`  - The clicked slide class. Defaults to `current`.
  * - `holder` - The slider additional content holder classname. Defaults to `slideDetails`.
- * - `block`  - The slider block than contains given classname in classlist. Defaults to an empty string.
- * @param {Function} holderInfoCallback The slider holder content callback to get the content.
+ * - `block`  - The slider block has this class applied. Defaults to an empty string.
+ * @param {Function} holderInfoCallback The callback function to display each slide's additional content.
  *                                      The `slide` param is passed.
+ * @param {Function} sliderCallback     The callback function to perform task on the slider.
+ *                                      The `slider` param (swiper instance) is passed.
  */
-export const showSlideContent = (classNames, holderInfoCallback) => {
+export const init = (classNames, holderInfoCallback, sliderCallback) => {
   let $slideClass = classNames.slide !== undefined ? classNames.slide : 'current',
     $holderClass = classNames.holder !== undefined ? classNames.holder : 'slideDetails',
     $blockClass = classNames.block !== undefined ? classNames.block : '',
@@ -348,27 +331,33 @@ export const showSlideContent = (classNames, holderInfoCallback) => {
         $slider = getSliderInstance($container.id),
         $holder = createInfoHolder($holderClass);
 
-      setSlidesAdditionalInfo($slider, holderInfoCallback);
+      if (holderInfoCallback) {
+        setSlidesAdditionalInfo($slider, holderInfoCallback);
 
-      $slider.on('click', (instance, event) => {
-        let $slide = instance.clickedSlide,
-          $index = instance.clickedIndex;
+        $slider.on('click', (instance, event) => {
+          let $slide = instance.clickedSlide,
+            $index = instance.clickedIndex;
 
-        // Make sure that click triggered on one of the slide inside slider.
-        if (typeof $slide === 'undefined') {
-          return;
-        }
+          // Make sure that click triggered on one of the slide inside slider.
+          if (typeof $slide === 'undefined') {
+            return;
+          }
 
-        setCurrentSlideClassName(instance, $slide, $slideClass);
+          setCurrentSlideClassName(instance, $slide, $slideClass);
 
-        let $content = getHolderWithInfo($holder, $index, $container.id);
+          let $content = getHolderWithInfo($holder, $index, $container.id);
 
-        $container.append($content);
+          $current.append($content);
 
-        if ($content.innerHTML === '') {
-          $slide.classList.remove($slideClass);
-        }
-      });
+          if ($content.innerHTML === '') {
+            $slide.classList.remove($slideClass);
+          }
+        });
+      }
+
+      if (sliderCallback) {
+        sliderCallback($slider);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -446,6 +435,11 @@ export const toggleSlider = (classNames, reset, blockClassName = '') => {
     $currentEl.onclick = event => {
       let $classList = event.currentTarget.classList,
         $target = getSliderBlockWithId($classList, blockClassName);
+
+      // For safety, don't do anything if no slider block found for the selector.
+      if ($target === undefined) {
+        return;
+      }
 
       setSelected($selectors, selector, { className: $selectorClickedClass, reset: $resetSelector });
 
