@@ -16,7 +16,8 @@
 import createSliderCarousel from './core/container';
 
 import {
-  slideInfoHolder,
+  props,
+  setProps,
   getNode,
   getNodes,
   getSliders,
@@ -24,7 +25,7 @@ import {
   hasContent,
   toArray,
   setSelected,
-  getSliderBlockWithId,
+  getBlockWithId,
   getSliderInstance,
   setCurrentSlideClassName,
   createInfoHolder,
@@ -43,7 +44,8 @@ createSliderCarousel();
 
 // Expose components as library to be used on other js files.
 export {
-  slideInfoHolder,
+  props,
+  setProps,
   getNode,
   getNodes,
   getSliders,
@@ -51,7 +53,7 @@ export {
   hasContent,
   toArray,
   setSelected,
-  getSliderBlockWithId,
+  getBlockWithId,
   getSliderInstance,
   setCurrentSlideClassName,
   createInfoHolder,
