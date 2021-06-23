@@ -351,7 +351,7 @@ export default createHigherOrderComponent(BlockEdit => {
                         step={5}
                         railColor="#ccc"
                         withInputField={true}
-                        beforeIcon="laptop"
+                        beforeIcon="smartphone"
                         renderTooltipContent={value => `${value} px`}
                       />
                       <RangeControl
@@ -415,7 +415,7 @@ export default createHigherOrderComponent(BlockEdit => {
                         step={5}
                         railColor="#ccc"
                         withInputField={true}
-                        beforeIcon="laptop"
+                        beforeIcon="tablet"
                         renderTooltipContent={value => `${value} px`}
                       />
                       <RangeControl
@@ -542,7 +542,7 @@ export default createHigherOrderComponent(BlockEdit => {
                         step={5}
                         railColor="#ccc"
                         withInputField={true}
-                        beforeIcon="laptop"
+                        beforeIcon="desktop"
                         renderTooltipContent={value => `${value} px`}
                       />
                       <RangeControl
