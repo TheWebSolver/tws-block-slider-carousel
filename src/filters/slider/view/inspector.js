@@ -46,7 +46,9 @@ export default createHigherOrderComponent(BlockEdit => {
       slideEffect,
       slideDirection,
       loopSlides,
+      autoplay,
       autoHeight,
+      freeMode,
       removeWrapperClass,
       removeSlideClass,
       wrapperClassNameToRemove,
@@ -244,11 +246,25 @@ export default createHigherOrderComponent(BlockEdit => {
                   onChange={() => props.setAttributes({ loopSlides: !loopSlides })}
                 />
                 <ToggleControl
+                  className="tws-slider-carousel__autoplay tws-blockfilter__toggle-inner"
+                  label={__('Autoplay slides', 'tws-blockfilter')}
+                  help={autoplay ? __('Slides will autoplay', 'tws-blockfilter') : __("Slides won't autoplay", 'tws-blockfilter')}
+                  checked={autoplay}
+                  onChange={() => props.setAttributes({ autoplay: !autoplay })}
+                />
+                <ToggleControl
                   className="tws-slider-carousel__auto-height tws-blockfilter__toggle-inner"
                   label={__('Auto Height', 'tws-blockfilter')}
                   help={autoHeight ? __('Container height adjust to the slide height', 'tws-blockfilter') : __("Won't adjust container to the slide height", 'tws-blockfilter')}
                   checked={autoHeight}
                   onChange={() => props.setAttributes({ autoHeight: !autoHeight })}
+                />
+                <ToggleControl
+                  className="tws-slider-carousel__freemode tws-blockfilter__toggle-inner"
+                  label={__('Free Mode', 'tws-blockfilter')}
+                  help={freeMode ? __('Slides will move freely', 'tws-blockfilter') : __("Slides won't move freely", 'tws-blockfilter')}
+                  checked={freeMode}
+                  onChange={() => props.setAttributes({ freeMode: !freeMode })}
                 />
                 <TextControl
                   label="Wrapper Element"

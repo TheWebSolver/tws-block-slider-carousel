@@ -89,7 +89,15 @@ export const sliderCarouselAttributes = {
     type: 'boolean',
     default: false
   },
+  autoplay: {
+    type: 'boolean',
+    default: false
+  },
   autoHeight: {
+    type: 'boolean',
+    default: false
+  },
+  freeMode: {
     type: 'boolean',
     default: false
   },

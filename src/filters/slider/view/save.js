@@ -46,7 +46,9 @@ export default (props, blockType, attributes) => {
     slideEffect,
     slideDirection,
     loopSlides,
+    autoplay,
     autoHeight,
+    freeMode,
     removeWrapperClass,
     removeSlideClass,
     wrapperClassNameToRemove,
@@ -88,7 +90,9 @@ export default (props, blockType, attributes) => {
       effect: slideEffect,
       direction: slideDirection,
       loop: loopSlides,
-      autoHeight: autoHeight
+      autoplay,
+      autoHeight,
+      freeMode
     },
     $removeWrapper = removeWrapperClass ? wrapperClassNameToRemove : '',
     $removeSlide = removeSlideClass ? slideClassNameToRemove : '',
